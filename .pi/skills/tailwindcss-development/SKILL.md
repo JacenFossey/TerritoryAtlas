@@ -10,7 +10,7 @@ metadata:
 
 ## Documentation
 
-Use `search-docs` for detailed Tailwind CSS v4 patterns and documentation.
+Check the installed Tailwind CSS major version, then use `search-docs` for version-matching patterns and documentation.
 
 ## Basic Usage
 
@@ -20,7 +20,9 @@ Use `search-docs` for detailed Tailwind CSS v4 patterns and documentation.
 
 ## Tailwind CSS v4 Specifics
 
-- Always use Tailwind CSS v4 and avoid deprecated utilities.
+Apply this section only when the installed Tailwind CSS major version is v4.
+
+- Avoid deprecated utilities.
 - `corePlugins` is not supported in Tailwind v4.
 
 ### CSS-First Configuration
