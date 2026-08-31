@@ -37,4 +37,15 @@ npm run build       # Create a production asset build
 php artisan migrate # Apply pending database migrations
 ```
 
+## Geography data
+
+Browser-ready GGH boundary assets are committed under `public/geo`. Regenerate and validate them with:
+
+```bash
+python3 scripts/geography/import_boundaries.py
+python3 scripts/geography/import_boundaries.py --validate-only
+```
+
+See [`scripts/geography/README.md`](scripts/geography/README.md) for authoritative sources, licensing, processing decisions, and tests.
+
 Local secrets belong in `.env`, which is ignored by Git. Keep `.env.example` safe to commit and update it whenever a new environment variable becomes required.
