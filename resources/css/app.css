@@ -1,0 +1,97 @@
+@import 'tailwindcss';
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+:root {
+    color: #202823;
+    background: #f7f6f2;
+    font-family: var(--font-sans);
+}
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+}
+
+.map-shell {
+    display: grid;
+    min-height: 100vh;
+    min-height: 100dvh;
+    grid-template-rows: auto minmax(0, 1fr);
+}
+
+.app-header {
+    z-index: 1;
+    display: flex;
+    min-height: 3.5rem;
+    align-items: baseline;
+    gap: 0.75rem;
+    border-bottom: 1px solid #d7d9d3;
+    padding: 0.8rem 1rem;
+    background: #f7f6f2;
+}
+
+.app-header h1 {
+    color: #173c2b;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+}
+
+.app-header p {
+    color: #657169;
+    font-size: 0.75rem;
+}
+
+.map {
+    position: relative;
+    min-height: 0;
+    background: #dbe5e7;
+}
+
+.map-loading {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    padding: 0.45rem 0.65rem;
+    transform: translate(-50%, -50%);
+    border: 1px solid #c8cfca;
+    border-radius: 0.25rem;
+    color: #46534b;
+    background: rgb(247 246 242 / 92%);
+    font-size: 0.75rem;
+}
+
+.maplibregl-ctrl-group {
+    border-radius: 0.25rem;
+}
+
+.maplibregl-ctrl-attrib.maplibregl-compact {
+    min-height: 24px;
+}
+
+@media (max-width: 36rem) {
+    .app-header {
+        min-height: 3.25rem;
+        padding-inline: 0.75rem;
+    }
+
+    .app-header p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}

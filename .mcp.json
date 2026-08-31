@@ -1,0 +1,12 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "wsl.exe",
+            "args": [
+                "/home/jacenf-keypak/.config/herd-lite/bin/php",
+                "/home/jacenf-keypak/dev/TerritoryAtlas/artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}
