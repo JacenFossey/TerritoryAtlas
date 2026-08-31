@@ -17,19 +17,36 @@
                 <p>Greater Golden Horseshoe</p>
             </header>
 
-            <div
-                id="map"
-                class="map"
-                role="region"
-                aria-label="Interactive map of the Greater Golden Horseshoe"
-            >
-                <p class="map-loading" data-map-loading>Loading map…</p>
+            <div class="map-workspace">
+                <div
+                    id="map"
+                    class="map"
+                    role="region"
+                    aria-label="Interactive map of the Greater Golden Horseshoe"
+                >
+                    <p class="map-loading" data-map-loading>Loading map…</p>
+                </div>
+
+                <aside class="map-legend" aria-label="Map legend">
+                    <h2>Major divisions</h2>
+                    <ul>
+                        <li><span class="legend-swatch legend-swatch-upper" aria-hidden="true"></span>Upper-tier</li>
+                        <li><span class="legend-swatch legend-swatch-single" aria-hidden="true"></span>Single-tier</li>
+                        <li><span class="legend-swatch legend-swatch-selected" aria-hidden="true"></span>Selected</li>
+                    </ul>
+                    <label class="legend-selection-label" for="region-select">Explore a division</label>
+                    <select id="region-select" class="legend-selection" data-region-select disabled>
+                        <option value="">Select a division</option>
+                    </select>
+                    <p class="sr-only" data-selected-region aria-live="polite"></p>
+                </aside>
             </div>
         </main>
 
         <script id="map-config" type="application/json">{!! json_encode([
             'styleUrl' => config('map.style_url'),
             'attribution' => config('map.attribution'),
+            'majorBoundariesUrl' => config('map.major_boundaries_url'),
             'bounds' => [
                 config('map.initial_bounds.southwest'),
                 config('map.initial_bounds.northeast'),

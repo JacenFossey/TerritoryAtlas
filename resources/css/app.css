@@ -55,10 +55,102 @@ body {
     font-size: 0.75rem;
 }
 
-.map {
+.map-workspace {
     position: relative;
     min-height: 0;
+}
+
+.map {
+    position: relative;
+    height: 100%;
+    min-height: 0;
     background: #dbe5e7;
+}
+
+.map-legend {
+    position: absolute;
+    z-index: 2;
+    bottom: 1.75rem;
+    left: 0.75rem;
+    width: 10rem;
+    border: 1px solid rgb(48 77 82 / 32%);
+    border-radius: 0.25rem;
+    padding: 0.65rem 0.7rem;
+    color: #30433b;
+    background: rgb(247 246 242 / 94%);
+    box-shadow: 0 1px 3px rgb(23 60 43 / 12%);
+    font-size: 0.7rem;
+}
+
+.map-legend h2 {
+    color: #173c2b;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.map-legend ul {
+    display: grid;
+    gap: 0.3rem;
+    margin-top: 0.45rem;
+}
+
+.map-legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.legend-swatch {
+    width: 1rem;
+    height: 0.7rem;
+    border: 1px solid #304d52;
+}
+
+.legend-swatch-upper {
+    background: rgb(108 131 164 / 42%);
+}
+
+.legend-swatch-single {
+    background: rgb(79 140 120 / 42%);
+}
+
+.legend-swatch-selected {
+    border-width: 2px;
+    border-color: #8f3f18;
+    background: rgb(217 119 47 / 55%);
+}
+
+.legend-selection-label {
+    display: block;
+    margin-top: 0.55rem;
+    border-top: 1px solid #d7d9d3;
+    padding-top: 0.5rem;
+    color: #526159;
+}
+
+.legend-selection {
+    display: block;
+    width: 100%;
+    margin-top: 0.3rem;
+    border: 1px solid #aeb8b1;
+    border-radius: 0.2rem;
+    padding: 0.3rem 1.35rem 0.3rem 0.35rem;
+    color: #173c2b;
+    background: #fff;
+    font: inherit;
+    font-weight: 600;
+    text-overflow: ellipsis;
+}
+
+.legend-selection:focus-visible {
+    outline: 2px solid #175f50;
+    outline-offset: 2px;
+}
+
+.legend-selection:disabled {
+    color: #657169;
+    background: #eef0ec;
 }
 
 .map-loading {
@@ -93,5 +185,11 @@ body {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+
+    .map-legend {
+        bottom: 1.5rem;
+        left: 0.5rem;
+        width: 9.5rem;
     }
 }
