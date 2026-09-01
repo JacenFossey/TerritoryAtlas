@@ -50,6 +50,8 @@ if (mapContainer && mapConfigElement) {
     const areaHierarchy = document.querySelector('[data-area-hierarchy]');
     const areaChildrenSection = document.querySelector('[data-area-children-section]');
     const areaChildren = document.querySelector('[data-area-children]');
+    const areaNearbySection = document.querySelector('[data-area-nearby-section]');
+    const areaNearby = document.querySelector('[data-area-nearby]');
     const areaDetailsClose = document.querySelector('[data-area-details-close]');
     const areaSearch = document.querySelector('[data-area-search]');
     const areaSearchInput = document.querySelector('[data-area-search-input]');
@@ -198,6 +200,8 @@ if (mapContainer && mapConfigElement) {
             replaceList(areaHierarchy, area.hierarchy);
             replaceList(areaChildren, area.children);
             areaChildrenSection.hidden = area.children.length === 0;
+            replaceList(areaNearby, area.nearby ?? []);
+            areaNearbySection.hidden = (area.nearby ?? []).length === 0;
             areaDetailsFeedback.textContent = '';
             areaDetailsContent.hidden = false;
             areaDetailsName.focus({ preventScroll: true });

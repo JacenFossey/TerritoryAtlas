@@ -20,6 +20,7 @@ class AreaHierarchyTest extends TestCase
         $this->assertSame(111, Area::query()->count());
         $this->assertSame(21, Area::query()->whereIn('area_type', ['upper_tier', 'single_tier'])->count());
         $this->assertSame(89, Area::query()->where('area_type', 'lower_tier')->count());
+        $this->assertSame(110, Area::query()->whereNotNull('latitude')->whereNotNull('longitude')->count());
 
         $york = Area::query()->where('geometry_key', 'on-munid-19000')->sole();
         $vaughan = Area::query()->where('geometry_key', 'on-munid-19028')->sole();

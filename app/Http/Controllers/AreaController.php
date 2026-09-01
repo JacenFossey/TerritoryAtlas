@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Area;
+use App\Services\Geography\NearbyAreas;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 
 class AreaController extends Controller
 {
-    public function __invoke(Area $area): JsonResponse
+    public function __invoke(Area $area, NearbyAreas $nearbyAreas): JsonResponse
     {
         $area->load([
             'children' => fn (HasMany $children): HasMany => $children->orderBy('name'),
@@ -34,6 +35,9 @@ class AreaController extends Controller
                 'children' => $area->children
                     ->map(fn (Area $child): array => $this->summary($child))
                     ->values()
+                    ->all(),
+                'nearby' => $nearbyAreas->for($area)
+                    ->map(fn (Area $nearby): array => $this->summary($nearby))
                     ->all(),
             ],
         ]);

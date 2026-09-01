@@ -53,7 +53,7 @@ class AreaSeeder extends Seeder
                 $properties = $feature['properties'];
                 $geometryKey = $this->requiredString($properties, 'id');
                 $isGta = in_array($geometryKey, self::GTA_MAJOR_GEOMETRY_KEYS, true);
-                $area = $this->seedFeature($properties, $ggh, $isGta);
+                $area = $this->seedFeature($feature, $ggh, $isGta);
                 $majorAreas[$geometryKey] = $area;
             }
 
@@ -66,7 +66,7 @@ class AreaSeeder extends Seeder
                     throw new UnexpectedValueException("No seeded major area matches [{$parentGeometryKey}].");
                 }
 
-                $this->seedFeature($properties, $parent, $parent->is_gta);
+                $this->seedFeature($feature, $parent, $parent->is_gta);
             }
 
             $this->deleteStaleOfficialAreas($expectedGeometryKeys);
@@ -74,11 +74,13 @@ class AreaSeeder extends Seeder
     }
 
     /**
-     * @param  array<string, mixed>  $properties
+     * @param  array{properties: array<string, mixed>, geometry: array<string, mixed>}  $feature
      */
-    private function seedFeature(array $properties, Area $parent, bool $isGta): Area
+    private function seedFeature(array $feature, Area $parent, bool $isGta): Area
     {
+        $properties = $feature['properties'];
         $geometryKey = $this->requiredString($properties, 'id');
+        $representativePoint = $this->representativePoint($feature['geometry']);
 
         return Area::query()->updateOrCreate(
             ['geometry_key' => $geometryKey],
@@ -90,11 +92,69 @@ class AreaSeeder extends Seeder
                 'administrative_status' => $this->requiredString($properties, 'administrative_status'),
                 'source_identifier' => $this->requiredString($properties, 'source_identifier'),
                 'source_name' => $this->requiredString($properties, 'source_name'),
+                'latitude' => $representativePoint['latitude'],
+                'longitude' => $representativePoint['longitude'],
                 'is_ggh' => (bool) ($properties['is_ggh'] ?? false),
                 'is_gta' => $isGta,
                 'boundary_precision' => $this->requiredString($properties, 'boundary_precision'),
             ],
         );
+    }
+
+    /**
+     * Use the boundary extent midpoint as a stable representative point for approximate proximity.
+     *
+     * @param  array<string, mixed>  $geometry
+     * @return array{latitude: float, longitude: float}
+     */
+    private function representativePoint(array $geometry): array
+    {
+        $coordinates = $geometry['coordinates'] ?? null;
+
+        if (! is_array($coordinates)) {
+            throw new UnexpectedValueException('Boundary feature geometry must contain coordinates.');
+        }
+
+        $bounds = [
+            'minimum_latitude' => INF,
+            'maximum_latitude' => -INF,
+            'minimum_longitude' => INF,
+            'maximum_longitude' => -INF,
+        ];
+        $this->extendBounds($coordinates, $bounds);
+
+        if (! is_finite($bounds['minimum_latitude'])) {
+            throw new UnexpectedValueException('Boundary feature geometry must contain coordinate pairs.');
+        }
+
+        return [
+            'latitude' => ($bounds['minimum_latitude'] + $bounds['maximum_latitude']) / 2,
+            'longitude' => ($bounds['minimum_longitude'] + $bounds['maximum_longitude']) / 2,
+        ];
+    }
+
+    /**
+     * @param  array<mixed>  $coordinates
+     * @param  array{minimum_latitude: float, maximum_latitude: float, minimum_longitude: float, maximum_longitude: float}  $bounds
+     */
+    private function extendBounds(array $coordinates, array &$bounds): void
+    {
+        if (count($coordinates) >= 2 && is_numeric($coordinates[0]) && is_numeric($coordinates[1])) {
+            $longitude = (float) $coordinates[0];
+            $latitude = (float) $coordinates[1];
+            $bounds['minimum_latitude'] = min($bounds['minimum_latitude'], $latitude);
+            $bounds['maximum_latitude'] = max($bounds['maximum_latitude'], $latitude);
+            $bounds['minimum_longitude'] = min($bounds['minimum_longitude'], $longitude);
+            $bounds['maximum_longitude'] = max($bounds['maximum_longitude'], $longitude);
+
+            return;
+        }
+
+        foreach ($coordinates as $nestedCoordinates) {
+            if (is_array($nestedCoordinates)) {
+                $this->extendBounds($nestedCoordinates, $bounds);
+            }
+        }
     }
 
     /**
@@ -114,7 +174,7 @@ class AreaSeeder extends Seeder
     }
 
     /**
-     * @param  list<array{properties: array<string, mixed>}>  $features
+     * @param  list<array{properties: array<string, mixed>, geometry: array<string, mixed>}>  $features
      * @return list<string>
      */
     private function geometryKeys(array $features): array
@@ -126,7 +186,7 @@ class AreaSeeder extends Seeder
     }
 
     /**
-     * @return list<array{properties: array<string, mixed>}>
+     * @return list<array{properties: array<string, mixed>, geometry: array<string, mixed>}>
      *
      * @throws JsonException
      */

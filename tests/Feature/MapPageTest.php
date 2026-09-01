@@ -43,6 +43,8 @@ class MapPageTest extends TestCase
             ->assertSee('Close area details')
             ->assertSee('Hierarchy')
             ->assertSee('Contained places')
+            ->assertSee('Nearby context')
+            ->assertSee('Approximate proximity between representative points; not travel time.')
             ->assertSee('areas\/__GEOMETRY_KEY__', false)
             ->assertDontSee('Laravel has an incredibly rich ecosystem');
     }

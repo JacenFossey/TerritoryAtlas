@@ -108,6 +108,12 @@
                             <h3 id="area-children-heading">Contained places</h3>
                             <ul class="area-details-children" data-area-children></ul>
                         </section>
+
+                        <section class="area-details-section" data-area-nearby-section aria-labelledby="area-nearby-heading" hidden>
+                            <h3 id="area-nearby-heading">Nearby context</h3>
+                            <p class="area-details-nearby-note">Approximate proximity between representative points; not travel time.</p>
+                            <ul class="area-details-nearby" data-area-nearby></ul>
+                        </section>
                     </div>
                 </aside>
             </div>

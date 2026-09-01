@@ -406,16 +406,24 @@ body {
 
 .area-details-memberships,
 .area-details-hierarchy,
-.area-details-children {
+.area-details-children,
+.area-details-nearby {
     display: grid;
     gap: 0.35rem;
     color: #30433b;
     font-size: 0.82rem;
 }
 
+.area-details-nearby-note {
+    color: #6d7972;
+    font-size: 0.75rem;
+    line-height: 1.35;
+}
+
 .area-details-memberships li,
 .area-details-hierarchy li,
-.area-details-children li {
+.area-details-children li,
+.area-details-nearby li {
     line-height: 1.35;
 }
 

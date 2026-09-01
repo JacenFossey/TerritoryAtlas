@@ -26,8 +26,8 @@ class AreaControllerTest extends TestCase
                 'is_ggh' => true,
                 'is_gta' => true,
                 'boundary_precision' => 'official',
-                'latitude' => null,
-                'longitude' => null,
+                'latitude' => '43.8370300',
+                'longitude' => '-79.5654300',
                 'source_name' => 'CITY OF VAUGHAN',
                 'notes' => null,
                 'hierarchy' => [
@@ -43,6 +43,33 @@ class AreaControllerTest extends TestCase
                     ],
                 ],
                 'children' => [],
+                'nearby' => [
+                    [
+                        'geometry_key' => 'on-munid-19038',
+                        'name' => 'Richmond Hill',
+                        'area_type' => 'lower_tier',
+                    ],
+                    [
+                        'geometry_key' => 'on-munid-21010',
+                        'name' => 'Brampton',
+                        'area_type' => 'lower_tier',
+                    ],
+                    [
+                        'geometry_key' => 'on-munid-20002',
+                        'name' => 'Toronto',
+                        'area_type' => 'single_tier',
+                    ],
+                    [
+                        'geometry_key' => 'on-munid-19046',
+                        'name' => 'Aurora',
+                        'area_type' => 'lower_tier',
+                    ],
+                    [
+                        'geometry_key' => 'on-munid-19049',
+                        'name' => 'King',
+                        'area_type' => 'lower_tier',
+                    ],
+                ],
             ],
         ]);
     }
@@ -79,7 +106,11 @@ class AreaControllerTest extends TestCase
             ->assertJsonPath('data.longitude', '-79.4819000')
             ->assertJsonPath('data.source_name', 'City of Vaughan Open Data')
             ->assertJsonPath('data.hierarchy.1.name', 'York Region')
-            ->assertJsonPath('data.hierarchy.2.name', 'Vaughan');
+            ->assertJsonPath('data.hierarchy.2.name', 'Vaughan')
+            ->assertJsonCount(5, 'data.nearby')
+            ->assertJsonPath('data.nearby.0.name', 'Maple')
+            ->assertJsonPath('data.nearby.1.name', 'North York')
+            ->assertJsonPath('data.nearby.2.name', 'Downsview');
     }
 
     public function test_returns_404_when_geometry_key_is_unknown(): void

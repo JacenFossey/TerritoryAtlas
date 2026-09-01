@@ -1,6 +1,6 @@
 # TerritoryAtlas — Product & Implementation Plan
 
-> **Status:** Initial product/architecture plan  
+> **Status:** PRs 0–9 complete; next up is PR 10 (PWA)
 > **Primary goal:** Build an installable, map-first application that makes the geography of the Greater Golden Horseshoe intuitive: search a place someone mentions, immediately understand where it is, what larger areas contain it, and what is nearby.
 
 ---
@@ -676,7 +676,7 @@ This is a target, not a requirement to create empty folders prematurely.
 
 Build in small, reviewable PRs. Each PR should leave `main` in a working state.
 
-### PR 0 — Bootstrap Laravel
+### PR 0 — Bootstrap Laravel ✅ Complete
 
 **Goal:** Establish the application foundation with no product complexity yet.
 
@@ -695,7 +695,7 @@ Build in small, reviewable PRs. Each PR should leave `main` in a working state.
 - Default automated tests pass.
 - Database can be created/migrated.
 
-### PR 1 — First real map
+### PR 1 — First real map ✅ Complete
 
 **Goal:** Replace the Laravel welcome screen with a usable MapLibre map centred on the GGH.
 
@@ -714,7 +714,7 @@ Build in small, reviewable PRs. Each PR should leave `main` in a working state.
 - Map works after production asset build.
 - No custom boundaries yet.
 
-### PR 2 — Reproducible Ontario GIS import
+### PR 2 — Reproducible Ontario GIS import ✅ Complete
 
 **Goal:** Establish the authoritative boundary-data pipeline.
 
@@ -735,7 +735,7 @@ Build in small, reviewable PRs. Each PR should leave `main` in a working state.
 - Assets are reasonably sized for browser delivery.
 - Source and licence are documented.
 
-### PR 3 — Major GGH boundaries
+### PR 3 — Major GGH boundaries ✅ Complete
 
 **Goal:** Make the application teach the major geography immediately.
 
@@ -754,7 +754,7 @@ Build in small, reviewable PRs. Each PR should leave `main` in a working state.
 - Underlying roads remain readable through polygon fills.
 - Selected feature is visually obvious.
 
-### PR 4 — Lower-tier municipal layer
+### PR 4 — Lower-tier municipal layer ✅ Complete
 
 **Goal:** Reveal the next administrative level as the user zooms in.
 
@@ -771,7 +771,7 @@ Build in small, reviewable PRs. Each PR should leave `main` in a working state.
 - Layer toggles work without reloading.
 - The map does not become unreadably busy.
 
-### PR 5 — Laravel area model and hierarchy
+### PR 5 — Laravel area model and hierarchy ✅ Complete
 
 **Goal:** Move from “polygons on a map” to a geography-aware application.
 
@@ -800,7 +800,7 @@ Build in small, reviewable PRs. Each PR should leave `main` in a working state.
 - Area hierarchy is test-covered.
 - Source/administrative status is represented in data.
 
-### PR 6 — Selection detail panel
+### PR 6 — Selection detail panel ✅ Complete
 
 **Goal:** Answer “what is this place?” when the user clicks the map.
 
@@ -815,7 +815,7 @@ Build in small, reviewable PRs. Each PR should leave `main` in a working state.
 - Clicking York Region can show its lower-tier municipalities.
 - Selection survives ordinary map interaction until changed/dismissed.
 
-### PR 7 — Search
+### PR 7 — Search ✅ Complete
 
 **Goal:** Make TerritoryAtlas useful when a place name is mentioned in conversation.
 
@@ -834,7 +834,7 @@ Build in small, reviewable PRs. Each PR should leave `main` in a working state.
 - Results disambiguate similarly named places.
 - Search does not require a third-party search service.
 
-### PR 8 — Common-place layer: first curated set
+### PR 8 — Common-place layer: first curated set ✅ Complete
 
 **Goal:** Bridge the gap between administrative geography and the names people actually use.
 
@@ -879,7 +879,7 @@ Build in small, reviewable PRs. Each PR should leave `main` in a working state.
 - UI distinguishes official versus approximate/common geography.
 - No invented “official-looking” boundary is presented as fact.
 
-### PR 9 — Nearby/context intelligence
+### PR 9 — Nearby/context intelligence ✅ Complete
 
 **Goal:** Improve the answer to “what is near this place?” without overbuilding GIS infrastructure.
 
@@ -1086,18 +1086,6 @@ The product should help build a mental model of the region through repeated use.
 
 ## 20. Immediate next step
 
-Start with **PR 0 — Bootstrap Laravel**.
+PRs 0–9 are complete. Start with **PR 10 — PWA**.
 
-Do not import GIS data yet.
-
-The first merge should prove only that:
-
-1. Laravel 13 is installed correctly;
-2. SQLite is configured;
-3. Vite works;
-4. the repository has clear local setup instructions;
-5. tests pass.
-
-Then move directly to **PR 1 — First real map** so a useful visual product appears as early as possible.
-
-That sequence keeps the project concrete: infrastructure earns its place because the next PR immediately uses it.
+The next release should add installability, manifest metadata, icons and safe application-shell caching without promising offline basemap support. After that, continue to PR 11 for V1 polish and release QA.
