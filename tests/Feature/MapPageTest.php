@@ -12,6 +12,7 @@ class MapPageTest extends TestCase
         config()->set('map.attribution', 'Example map attribution');
         config()->set('map.major_boundaries_url', '/geo/example-major-boundaries.geojson');
         config()->set('map.lower_boundaries_url', '/geo/example-lower-boundaries.geojson');
+        config()->set('map.common_places_url', '/geo/example-common-places.geojson');
 
         $response = $this->get('/');
 
@@ -24,11 +25,13 @@ class MapPageTest extends TestCase
             ->assertSee('Example map attribution')
             ->assertSee('example-major-boundaries.geojson')
             ->assertSee('example-lower-boundaries.geojson')
+            ->assertSee('example-common-places.geojson')
             ->assertSee('data-area-search-input', false)
             ->assertSee('Search places…')
             ->assertSee('area-search', false)
             ->assertSee('data-layer-toggle="major"', false)
             ->assertSee('data-layer-toggle="municipal"', false)
+            ->assertSee('data-layer-toggle="common"', false)
             ->assertSee('Major divisions')
             ->assertSee('Lower-tier municipalities')
             ->assertSee('Upper-tier')
@@ -39,7 +42,7 @@ class MapPageTest extends TestCase
             ->assertSee('data-area-details', false)
             ->assertSee('Close area details')
             ->assertSee('Hierarchy')
-            ->assertSee('Municipalities')
+            ->assertSee('Contained places')
             ->assertSee('areas\/__GEOMETRY_KEY__', false)
             ->assertDontSee('Laravel has an incredibly rich ecosystem');
     }

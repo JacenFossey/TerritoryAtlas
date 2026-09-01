@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Database\Seeders\AreaSeeder;
+use Database\Seeders\CommonPlaceSeeder;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
@@ -25,6 +26,10 @@ class AreaControllerTest extends TestCase
                 'is_ggh' => true,
                 'is_gta' => true,
                 'boundary_precision' => 'official',
+                'latitude' => null,
+                'longitude' => null,
+                'source_name' => 'CITY OF VAUGHAN',
+                'notes' => null,
                 'hierarchy' => [
                     [
                         'geometry_key' => null,
@@ -57,6 +62,24 @@ class AreaControllerTest extends TestCase
                 'name' => 'Vaughan',
                 'area_type' => 'lower_tier',
             ]);
+    }
+
+    public function test_common_place_details_identify_a_representative_point_and_its_source(): void
+    {
+        $this->seed([AreaSeeder::class, CommonPlaceSeeder::class]);
+
+        $response = $this->getJson(route('areas.show', ['area' => 'common-place-concord']));
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('data.name', 'Concord')
+            ->assertJsonPath('data.area_type', 'community')
+            ->assertJsonPath('data.boundary_precision', 'point_only')
+            ->assertJsonPath('data.latitude', '43.8001000')
+            ->assertJsonPath('data.longitude', '-79.4819000')
+            ->assertJsonPath('data.source_name', 'City of Vaughan Open Data')
+            ->assertJsonPath('data.hierarchy.1.name', 'York Region')
+            ->assertJsonPath('data.hierarchy.2.name', 'Vaughan');
     }
 
     public function test_returns_404_when_geometry_key_is_unknown(): void

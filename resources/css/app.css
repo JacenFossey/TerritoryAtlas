@@ -235,6 +235,16 @@ body {
     background: rgb(217 119 47 / 55%);
 }
 
+.legend-point {
+    width: 0.65rem;
+    height: 0.65rem;
+    flex: 0 0 auto;
+    border: 1px solid #f7f6f2;
+    border-radius: 50%;
+    background: #175f50;
+    box-shadow: 0 0 0 1px #175f50;
+}
+
 .legend-selection-label {
     display: block;
     margin-top: 0.55rem;
@@ -349,13 +359,30 @@ body {
 }
 
 .area-details-feedback,
-.area-details-status {
+.area-details-status,
+.area-details-precision {
     color: #526159;
     font-size: 0.8rem;
 }
 
 .area-details-feedback {
     padding-top: 1rem;
+}
+
+.area-details-precision {
+    border-left: 3px solid #d9772f;
+    padding-left: 0.65rem;
+    line-height: 1.4;
+}
+
+.area-details-precision:empty,
+.area-details-source:empty {
+    display: none;
+}
+
+.area-details-source {
+    color: #657169;
+    font-size: 0.7rem;
 }
 
 .area-details-content {

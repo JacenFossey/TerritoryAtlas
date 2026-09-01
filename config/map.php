@@ -12,6 +12,8 @@ return [
 
     'lower_boundaries_url' => '/geo/lower-tier.geojson',
 
+    'common_places_url' => '/geo/common-places.geojson',
+
     'initial_bounds' => [
         'southwest' => [-81.15, 42.65],
         'northeast' => [-77.10, 44.95],

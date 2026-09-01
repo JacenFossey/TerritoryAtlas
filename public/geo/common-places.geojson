@@ -1,0 +1,261 @@
+{
+  "type": "FeatureCollection",
+  "name": "TerritoryAtlas curated common places",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "common-place-concord",
+      "properties": {
+        "id": "common-place-concord",
+        "parent_id": "on-munid-19028",
+        "name": "Concord",
+        "slug": "concord",
+        "area_type": "community",
+        "boundary_precision": "point_only",
+        "source_name": "City of Vaughan Open Data",
+        "source_url": "https://www.vaughan.ca/about-city-vaughan/open-data"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.4819, 43.8001] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-woodbridge",
+      "properties": {
+        "id": "common-place-woodbridge",
+        "parent_id": "on-munid-19028",
+        "name": "Woodbridge",
+        "slug": "woodbridge",
+        "area_type": "community",
+        "boundary_precision": "point_only",
+        "source_name": "City of Vaughan Open Data",
+        "source_url": "https://www.vaughan.ca/about-city-vaughan/open-data"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.5987, 43.7841] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-maple",
+      "properties": {
+        "id": "common-place-maple",
+        "parent_id": "on-munid-19028",
+        "name": "Maple",
+        "slug": "maple",
+        "area_type": "community",
+        "boundary_precision": "point_only",
+        "source_name": "City of Vaughan Open Data",
+        "source_url": "https://www.vaughan.ca/about-city-vaughan/open-data"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.5083, 43.8503] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-kleinburg",
+      "properties": {
+        "id": "common-place-kleinburg",
+        "parent_id": "on-munid-19028",
+        "name": "Kleinburg",
+        "slug": "kleinburg",
+        "area_type": "community",
+        "boundary_precision": "point_only",
+        "source_name": "City of Vaughan Open Data",
+        "source_url": "https://www.vaughan.ca/about-city-vaughan/open-data"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.6284, 43.8439] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-meadowvale",
+      "properties": {
+        "id": "common-place-meadowvale",
+        "parent_id": "on-munid-21005",
+        "name": "Meadowvale",
+        "slug": "meadowvale",
+        "area_type": "community",
+        "boundary_precision": "point_only",
+        "source_name": "City of Mississauga Open Data",
+        "source_url": "https://www.mississauga.ca/services-and-programs/healthy-living-and-social-well-being/open-data/"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.7617, 43.5838] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-streetsville",
+      "properties": {
+        "id": "common-place-streetsville",
+        "parent_id": "on-munid-21005",
+        "name": "Streetsville",
+        "slug": "streetsville",
+        "area_type": "community",
+        "boundary_precision": "point_only",
+        "source_name": "City of Mississauga Open Data",
+        "source_url": "https://www.mississauga.ca/services-and-programs/healthy-living-and-social-well-being/open-data/"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.7134, 43.5827] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-dixie",
+      "properties": {
+        "id": "common-place-dixie",
+        "parent_id": "on-munid-21005",
+        "name": "Dixie",
+        "slug": "dixie",
+        "area_type": "community",
+        "boundary_precision": "point_only",
+        "source_name": "City of Mississauga Open Data",
+        "source_url": "https://www.mississauga.ca/services-and-programs/healthy-living-and-social-well-being/open-data/"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.5957, 43.6092] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-malton",
+      "properties": {
+        "id": "common-place-malton",
+        "parent_id": "on-munid-21005",
+        "name": "Malton",
+        "slug": "malton",
+        "area_type": "community",
+        "boundary_precision": "point_only",
+        "source_name": "City of Mississauga Open Data",
+        "source_url": "https://www.mississauga.ca/services-and-programs/healthy-living-and-social-well-being/open-data/"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.6424, 43.7059] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-etobicoke",
+      "properties": {
+        "id": "common-place-etobicoke",
+        "parent_id": "on-munid-20002",
+        "name": "Etobicoke",
+        "slug": "etobicoke",
+        "area_type": "historic_area",
+        "boundary_precision": "point_only",
+        "source_name": "City of Toronto Open Data",
+        "source_url": "https://open.toronto.ca/"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.5677, 43.6437] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-north-york",
+      "properties": {
+        "id": "common-place-north-york",
+        "parent_id": "on-munid-20002",
+        "name": "North York",
+        "slug": "north-york",
+        "area_type": "historic_area",
+        "boundary_precision": "point_only",
+        "source_name": "City of Toronto Open Data",
+        "source_url": "https://open.toronto.ca/"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.4142, 43.7615] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-scarborough",
+      "properties": {
+        "id": "common-place-scarborough",
+        "parent_id": "on-munid-20002",
+        "name": "Scarborough",
+        "slug": "scarborough",
+        "area_type": "historic_area",
+        "boundary_precision": "point_only",
+        "source_name": "City of Toronto Open Data",
+        "source_url": "https://open.toronto.ca/"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.2578, 43.7731] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-rexdale",
+      "properties": {
+        "id": "common-place-rexdale",
+        "parent_id": "on-munid-20002",
+        "name": "Rexdale",
+        "slug": "rexdale",
+        "area_type": "neighbourhood",
+        "boundary_precision": "point_only",
+        "source_name": "City of Toronto Neighbourhood Profiles",
+        "source_url": "https://www.toronto.ca/city-government/data-research-maps/neighbourhood-profiles/"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.5717, 43.7214] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-downsview",
+      "properties": {
+        "id": "common-place-downsview",
+        "parent_id": "on-munid-20002",
+        "name": "Downsview",
+        "slug": "downsview",
+        "area_type": "neighbourhood",
+        "boundary_precision": "point_only",
+        "source_name": "City of Toronto Neighbourhood Profiles",
+        "source_url": "https://www.toronto.ca/city-government/data-research-maps/neighbourhood-profiles/"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.4781, 43.7322] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-ancaster",
+      "properties": {
+        "id": "common-place-ancaster",
+        "parent_id": "on-munid-25005",
+        "name": "Ancaster",
+        "slug": "ancaster",
+        "area_type": "community",
+        "boundary_precision": "point_only",
+        "source_name": "City of Hamilton Community Profiles",
+        "source_url": "https://www.hamilton.ca/city-council/about-your-city/community-profiles"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.9873, 43.2182] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-stoney-creek",
+      "properties": {
+        "id": "common-place-stoney-creek",
+        "parent_id": "on-munid-25005",
+        "name": "Stoney Creek",
+        "slug": "stoney-creek",
+        "area_type": "community",
+        "boundary_precision": "point_only",
+        "source_name": "City of Hamilton Community Profiles",
+        "source_url": "https://www.hamilton.ca/city-council/about-your-city/community-profiles"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.7196, 43.2183] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-dundas",
+      "properties": {
+        "id": "common-place-dundas",
+        "parent_id": "on-munid-25005",
+        "name": "Dundas",
+        "slug": "dundas",
+        "area_type": "community",
+        "boundary_precision": "point_only",
+        "source_name": "City of Hamilton Community Profiles",
+        "source_url": "https://www.hamilton.ca/city-council/about-your-city/community-profiles"
+      },
+      "geometry": { "type": "Point", "coordinates": [-79.9562, 43.2665] }
+    },
+    {
+      "type": "Feature",
+      "id": "common-place-flamborough",
+      "properties": {
+        "id": "common-place-flamborough",
+        "parent_id": "on-munid-25005",
+        "name": "Flamborough",
+        "slug": "flamborough",
+        "area_type": "community",
+        "boundary_precision": "point_only",
+        "source_name": "City of Hamilton Community Profiles",
+        "source_url": "https://www.hamilton.ca/city-council/about-your-city/community-profiles"
+      },
+      "geometry": { "type": "Point", "coordinates": [-80.0454, 43.3298] }
+    }
+  ]
+}

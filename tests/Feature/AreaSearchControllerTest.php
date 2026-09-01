@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Area;
 use App\Models\AreaAlias;
 use Database\Seeders\AreaSeeder;
+use Database\Seeders\CommonPlaceSeeder;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
@@ -57,6 +58,25 @@ class AreaSearchControllerTest extends TestCase
                     'slug' => 'vaughan',
                     'area_type' => 'lower_tier',
                     'subtitle' => 'Lower-tier municipality in York Region',
+                ],
+            ],
+        ]);
+    }
+
+    public function test_search_returns_a_curated_common_place_with_its_municipal_context(): void
+    {
+        $this->seed([AreaSeeder::class, CommonPlaceSeeder::class]);
+
+        $response = $this->getJson(route('areas.search', ['q' => 'concord']));
+
+        $response->assertExactJson([
+            'data' => [
+                [
+                    'geometry_key' => 'common-place-concord',
+                    'name' => 'Concord',
+                    'slug' => 'concord',
+                    'area_type' => 'community',
+                    'subtitle' => 'Community in Vaughan, York Region',
                 ],
             ],
         ]);

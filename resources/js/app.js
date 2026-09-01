@@ -42,6 +42,8 @@ if (mapContainer && mapConfigElement) {
     const areaDetailsName = document.querySelector('[data-area-name]');
     const areaDetailsType = document.querySelector('[data-area-type]');
     const areaDetailsStatus = document.querySelector('[data-area-status]');
+    const areaDetailsPrecision = document.querySelector('[data-area-precision]');
+    const areaDetailsSource = document.querySelector('[data-area-source]');
     const areaDetailsFeedback = document.querySelector('[data-area-feedback]');
     const areaDetailsContent = document.querySelector('[data-area-content]');
     const areaMemberships = document.querySelector('[data-area-memberships]');
@@ -73,6 +75,11 @@ if (mapContainer && mapConfigElement) {
             'lower-boundaries-outline',
             'lower-boundaries-label',
         ];
+        const commonSourceId = 'common-places';
+        const commonLayerIds = [
+            'common-places-points',
+            'common-places-labels',
+        ];
         const basemapLayers = map.getStyle().layers;
         const firstBasemapLabelId = basemapLayers.find(({ type }) => type === 'symbol')?.id;
         const basemapPlaceLabelIds = basemapLayers
@@ -97,11 +104,22 @@ if (mapContainer && mapConfigElement) {
         const boundaryCollections = new globalThis.Map([
             [sourceId, fetchBoundaryCollection(mapConfig.majorBoundariesUrl)],
             [municipalSourceId, fetchBoundaryCollection(mapConfig.lowerBoundariesUrl)],
+            [commonSourceId, fetchBoundaryCollection(mapConfig.commonPlacesUrl)],
+        ]);
+        const commonAreaTypes = new Set([
+            'community',
+            'neighbourhood',
+            'historic_area',
+            'business_district',
         ]);
 
-        const sourceForAreaType = (areaType) => (
-            areaType === 'lower_tier' ? municipalSourceId : sourceId
-        );
+        const sourceForAreaType = (areaType) => {
+            if (areaType === 'lower_tier') {
+                return municipalSourceId;
+            }
+
+            return commonAreaTypes.has(areaType) ? commonSourceId : sourceId;
+        };
 
         const formatAreaType = (areaType) => {
             const labels = {
@@ -156,6 +174,12 @@ if (mapContainer && mapConfigElement) {
             areaDetailsName.textContent = area.name;
             areaDetailsType.textContent = formatAreaType(area.area_type);
             areaDetailsStatus.textContent = area.administrative_status ?? '';
+            areaDetailsPrecision.textContent = area.boundary_precision === 'point_only'
+                ? 'Common geography shown as a representative point; no boundary is asserted.'
+                : area.boundary_precision === 'approximate'
+                    ? 'Approximate common-geography boundary.'
+                    : '';
+            areaDetailsSource.textContent = area.source_name ? `Source: ${area.source_name}` : '';
 
             const memberships = [];
 
@@ -269,6 +293,16 @@ if (mapContainer && mapConfigElement) {
                     const feature = features.find(({ properties }) => properties.id === geometryKey);
 
                     if (!feature) {
+                        return;
+                    }
+
+                    if (feature.geometry.type === 'Point') {
+                        map.easeTo({
+                            center: feature.geometry.coordinates,
+                            zoom: 11,
+                            duration: 700,
+                        });
+
                         return;
                     }
 
@@ -452,6 +486,58 @@ if (mapContainer && mapConfigElement) {
             }
         };
 
+        map.addSource(commonSourceId, {
+            type: 'geojson',
+            data: mapConfig.commonPlacesUrl,
+            promoteId: 'id',
+        });
+
+        map.addLayer(
+            {
+                id: commonLayerIds[0],
+                type: 'circle',
+                source: commonSourceId,
+                minzoom: 8.5,
+                paint: {
+                    'circle-color': [
+                        'case',
+                        ['boolean', ['feature-state', 'selected'], false],
+                        '#d9772f',
+                        '#175f50',
+                    ],
+                    'circle-radius': [
+                        'case',
+                        ['boolean', ['feature-state', 'selected'], false],
+                        7,
+                        4.5,
+                    ],
+                    'circle-stroke-color': '#f7f6f2',
+                    'circle-stroke-width': 1.5,
+                },
+            },
+            firstBasemapLabelId,
+        );
+
+        map.addLayer({
+            id: commonLayerIds[1],
+            type: 'symbol',
+            source: commonSourceId,
+            minzoom: 9.25,
+            layout: {
+                'text-field': ['get', 'name'],
+                'text-font': ['Noto Sans Regular'],
+                'text-size': ['interpolate', ['linear'], ['zoom'], 9.25, 11.5, 12, 14],
+                'text-offset': [0, 1],
+                'text-anchor': 'top',
+                'text-padding': 2,
+            },
+            paint: {
+                'text-color': '#173c2b',
+                'text-halo-color': 'rgba(247, 246, 242, 0.94)',
+                'text-halo-width': 1.25,
+            },
+        });
+
         map.addSource(municipalSourceId, {
             type: 'geojson',
             data: mapConfig.lowerBoundariesUrl,
@@ -620,6 +706,8 @@ if (mapContainer && mapConfigElement) {
         map.moveLayer(municipalLayerIds[0], outlineLayerId);
         map.moveLayer(municipalLayerIds[1], outlineLayerId);
         map.moveLayer(municipalLayerIds[2], labelLayerId);
+        map.moveLayer(commonLayerIds[0], labelLayerId);
+        map.moveLayer(commonLayerIds[1], labelLayerId);
 
         for (const layerId of basemapPlaceLabelIds) {
             const textSize = map.getLayoutProperty(layerId, 'text-size');
@@ -642,10 +730,11 @@ if (mapContainer && mapConfigElement) {
         };
 
         for (const toggle of layerToggles) {
-            const isMajorToggle = toggle.dataset.layerToggle === 'major';
-            const layerIds = isMajorToggle
-                ? [fillLayerId, outlineLayerId, labelLayerId]
-                : municipalLayerIds;
+            const layerIds = {
+                major: [fillLayerId, outlineLayerId, labelLayerId],
+                municipal: municipalLayerIds,
+                common: commonLayerIds,
+            }[toggle.dataset.layerToggle] ?? [];
             const syncLayerVisibility = () => {
                 setLayerVisibility(layerIds, toggle.checked);
             };
@@ -715,6 +804,14 @@ if (mapContainer && mapConfigElement) {
             map.getCanvas().style.cursor = '';
         });
 
+        map.on('mouseenter', commonLayerIds[0], () => {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        map.on('mouseleave', commonLayerIds[0], () => {
+            map.getCanvas().style.cursor = '';
+        });
+
         map.on('mouseenter', municipalLayerIds[0], () => {
             map.getCanvas().style.cursor = 'pointer';
         });
@@ -725,7 +822,7 @@ if (mapContainer && mapConfigElement) {
 
         map.on('click', ({ point }) => {
             const area = map.queryRenderedFeatures(point, {
-                layers: [municipalLayerIds[0], fillLayerId],
+                layers: [commonLayerIds[0], municipalLayerIds[0], fillLayerId],
             })[0];
 
             if (!area) {

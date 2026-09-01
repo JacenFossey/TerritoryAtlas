@@ -23,6 +23,10 @@ class AreaController extends Controller
                 'is_ggh' => $area->is_ggh,
                 'is_gta' => $area->is_gta,
                 'boundary_precision' => $area->boundary_precision,
+                'latitude' => $area->latitude,
+                'longitude' => $area->longitude,
+                'source_name' => $area->source_name,
+                'notes' => $area->notes,
                 'hierarchy' => $area->ancestors()
                     ->map(fn (Area $ancestor): array => $this->summary($ancestor))
                     ->values()

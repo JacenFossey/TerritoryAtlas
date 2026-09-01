@@ -60,12 +60,14 @@
                         <legend class="sr-only">Map layers</legend>
                         <label><input type="checkbox" data-layer-toggle="major" checked> Major divisions</label>
                         <label><input type="checkbox" data-layer-toggle="municipal" checked> Lower-tier municipalities</label>
+                        <label><input type="checkbox" data-layer-toggle="common" checked> Common places</label>
                     </fieldset>
                     <h2 class="legend-key-heading">Major divisions</h2>
                     <ul>
                         <li><span class="legend-swatch legend-swatch-upper" aria-hidden="true"></span>Upper-tier</li>
                         <li><span class="legend-swatch legend-swatch-single" aria-hidden="true"></span>Single-tier</li>
                         <li><span class="legend-swatch legend-swatch-lower" aria-hidden="true"></span>Lower-tier</li>
+                        <li><span class="legend-point" aria-hidden="true"></span>Common place (representative point)</li>
                         <li><span class="legend-swatch legend-swatch-selected" aria-hidden="true"></span>Selected</li>
                     </ul>
                     <label class="legend-selection-label" for="region-select">Explore a division</label>
@@ -89,6 +91,8 @@
 
                     <div class="area-details-content" data-area-content hidden>
                         <p class="area-details-status" data-area-status></p>
+                        <p class="area-details-precision" data-area-precision></p>
+                        <p class="area-details-source" data-area-source></p>
 
                         <section class="area-details-section" aria-labelledby="area-context-heading">
                             <h3 id="area-context-heading">Context</h3>
@@ -101,7 +105,7 @@
                         </nav>
 
                         <section class="area-details-section" data-area-children-section aria-labelledby="area-children-heading" hidden>
-                            <h3 id="area-children-heading">Municipalities</h3>
+                            <h3 id="area-children-heading">Contained places</h3>
                             <ul class="area-details-children" data-area-children></ul>
                         </section>
                     </div>
@@ -114,6 +118,7 @@
             'attribution' => config('map.attribution'),
             'majorBoundariesUrl' => config('map.major_boundaries_url'),
             'lowerBoundariesUrl' => config('map.lower_boundaries_url'),
+            'commonPlacesUrl' => config('map.common_places_url'),
             'areaDetailsUrl' => route('areas.show', ['area' => '__GEOMETRY_KEY__']),
             'areaSearchUrl' => route('areas.search'),
             'bounds' => [
