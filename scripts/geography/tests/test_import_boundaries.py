@@ -59,6 +59,24 @@ class ImportBoundariesTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "duplicate feature IDs"):
             import_boundaries.validate_collection(collection)
 
+    def test_validate_collection_requires_seeded_metadata_and_lower_tier_parent(self):
+        feature = import_boundaries.build_features(
+            [self.feature("Mainland")],
+            "lower_tier",
+            parent_ids={"REGIONAL MUNICIPALITY OF YORK": "on-munid-19000"},
+        )[0]
+        del feature["properties"]["boundary_precision"]
+        collection = import_boundaries.feature_collection("Test", [feature])
+
+        with self.assertRaisesRegex(ValueError, "missing required properties"):
+            import_boundaries.validate_collection(collection)
+
+        feature["properties"]["boundary_precision"] = "official"
+        del feature["properties"]["parent_id"]
+
+        with self.assertRaisesRegex(ValueError, "missing parent_id"):
+            import_boundaries.validate_collection(collection)
+
     def test_query_requests_wgs84_simplified_geojson(self):
         response = io.BytesIO(json.dumps({"type": "FeatureCollection", "features": []}).encode())
 

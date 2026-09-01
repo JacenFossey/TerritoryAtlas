@@ -235,9 +235,21 @@ def validate_collection(collection: dict[str, Any], expected_ids: set[str] | Non
         if geometry_type not in {"Polygon", "MultiPolygon"}:
             raise ValueError(f"Feature {feature.get('id')} has invalid geometry {geometry_type!r}")
         properties = feature.get("properties", {})
-        required = {"id", "name", "slug", "area_type", "source_identifier", "source_name"}
+        required = {
+            "id",
+            "name",
+            "slug",
+            "area_type",
+            "administrative_status",
+            "source_identifier",
+            "source_name",
+            "boundary_precision",
+            "is_ggh",
+        }
         if not required.issubset(properties):
             raise ValueError(f"Feature {feature.get('id')} is missing required properties")
+        if properties["area_type"] == "lower_tier" and not properties.get("parent_id"):
+            raise ValueError(f"Lower-tier feature {feature.get('id')} is missing parent_id")
 
 
 def write_collection(path: Path, collection: dict[str, Any]) -> None:
