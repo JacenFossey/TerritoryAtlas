@@ -12,6 +12,16 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
     });
 }
 
+const mapLegend = document.querySelector('[data-map-legend]');
+
+if (mapLegend) {
+    const mobileLegendQuery = window.matchMedia('(max-width: 48rem)');
+    const syncLegendDisclosure = ({ matches }) => mapLegend.toggleAttribute('open', !matches);
+
+    syncLegendDisclosure(mobileLegendQuery);
+    mobileLegendQuery.addEventListener('change', syncLegendDisclosure);
+}
+
 const mapContainer = document.querySelector('#map');
 const mapConfigElement = document.querySelector('#map-config');
 

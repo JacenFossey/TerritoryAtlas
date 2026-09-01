@@ -76,30 +76,33 @@
                     </div>
                 </div>
 
-                <aside class="map-legend" aria-label="Map legend">
-                    <h2>Map layers</h2>
-                    <fieldset class="legend-layers">
-                        <legend class="sr-only">Map layers</legend>
-                        <label><input type="checkbox" data-layer-toggle="major" checked> Major divisions</label>
-                        <label><input type="checkbox" data-layer-toggle="municipal" checked> Lower-tier municipalities</label>
-                        <label><input type="checkbox" data-layer-toggle="common" checked> Common places</label>
-                    </fieldset>
-                    <h2 class="legend-key-heading">Major divisions</h2>
-                    <ul>
-                        <li><span class="legend-swatch legend-swatch-upper" aria-hidden="true"></span>Upper-tier</li>
-                        <li><span class="legend-swatch legend-swatch-single" aria-hidden="true"></span>Single-tier</li>
-                        <li><span class="legend-swatch legend-swatch-lower" aria-hidden="true"></span>Lower-tier</li>
-                        <li><span class="legend-point" aria-hidden="true"></span>Common place (representative point)</li>
-                        <li><span class="legend-swatch legend-swatch-selected" aria-hidden="true"></span>Selected</li>
-                    </ul>
-                    <label class="legend-selection-label" for="region-select">Explore a division</label>
-                    <select id="region-select" class="legend-selection" data-region-select disabled>
-                        <option value="">Select a division</option>
-                    </select>
-                    <p class="legend-selection-status" data-region-select-status aria-live="polite">Loading divisions…</p>
-                    <p class="legend-keyboard-note">Use search or this list as a keyboard alternative to selecting map features.</p>
-                    <p class="sr-only" data-selected-region aria-live="polite"></p>
-                </aside>
+                <details class="map-legend" data-map-legend open>
+                    <summary class="map-legend-toggle">Map controls</summary>
+                    <aside class="map-legend-content" aria-label="Map legend">
+                        <h2>Map layers</h2>
+                        <fieldset class="legend-layers">
+                            <legend class="sr-only">Map layers</legend>
+                            <label><input type="checkbox" data-layer-toggle="major" checked> Major divisions</label>
+                            <label><input type="checkbox" data-layer-toggle="municipal" checked> Lower-tier municipalities</label>
+                            <label><input type="checkbox" data-layer-toggle="common" checked> Common places</label>
+                        </fieldset>
+                        <h2 class="legend-key-heading">Major divisions</h2>
+                        <ul>
+                            <li><span class="legend-swatch legend-swatch-upper" aria-hidden="true"></span>Upper-tier</li>
+                            <li><span class="legend-swatch legend-swatch-single" aria-hidden="true"></span>Single-tier</li>
+                            <li><span class="legend-swatch legend-swatch-lower" aria-hidden="true"></span>Lower-tier</li>
+                            <li><span class="legend-point" aria-hidden="true"></span>Common place (representative point)</li>
+                            <li><span class="legend-swatch legend-swatch-selected" aria-hidden="true"></span>Selected</li>
+                        </ul>
+                        <label class="legend-selection-label" for="region-select">Explore a division</label>
+                        <select id="region-select" class="legend-selection" data-region-select disabled>
+                            <option value="">Select a division</option>
+                        </select>
+                        <p class="legend-selection-status" data-region-select-status aria-live="polite">Loading divisions…</p>
+                        <p class="legend-keyboard-note">Use search or this list as a keyboard alternative to selecting map features.</p>
+                        <p class="sr-only" data-selected-region aria-live="polite"></p>
+                    </aside>
+                </details>
 
                 <aside class="area-details" data-area-details aria-labelledby="area-details-name" hidden>
                     <div class="area-details-header">

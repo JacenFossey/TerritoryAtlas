@@ -49,6 +49,8 @@ class MapPageTest extends TestCase
             ->assertSee('Open Government Licence – Ontario')
             ->assertSee('data-map-retry', false)
             ->assertSee('Use search or this list as a keyboard alternative to selecting map features.')
+            ->assertSee('data-map-legend', false)
+            ->assertSee('Map controls')
             ->assertSee('data-layer-toggle="major"', false)
             ->assertSee('data-layer-toggle="municipal"', false)
             ->assertSee('data-layer-toggle="common"', false)
