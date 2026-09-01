@@ -1,6 +1,6 @@
 # TerritoryAtlas — Product & Implementation Plan
 
-> **Status:** PRs 0–11 complete; next up is PR 12 (Laravel Cloud deployment and V1 validation)
+> **Status:** V1 released; PRs 0–12 complete, including Laravel Cloud deployment and production/mobile validation
 > **Primary goal:** Build an installable, map-first application that makes the geography of the Greater Golden Horseshoe intuitive: search a place someone mentions, immediately understand where it is, what larger areas contain it, and what is nearby.
 
 ---
@@ -940,7 +940,7 @@ A user hears the word **Concord**, opens TerritoryAtlas, types `Concord`, select
 
 If that experience is fast and obvious, V1 has accomplished its core job.
 
-### PR 12 — Laravel Cloud deployment and V1 validation
+### PR 12 — Laravel Cloud deployment and V1 validation ✅ Complete
 
 **Goal:** Deploy TerritoryAtlas to a stable HTTPS environment and complete production/mobile validation for the V1 release.
 
@@ -1108,8 +1108,8 @@ The product should help build a mental model of the region through repeated use.
 
 ---
 
-## 20. Immediate next step
+## 20. V1 release status
 
-PRs 0–11 are complete. Start with **PR 12 — Laravel Cloud deployment and V1 validation**.
+PRs 0–12 are complete. TerritoryAtlas V1 is deployed to Laravel Cloud with managed production persistence, HTTPS, installable PWA support, production cache/compression policies and validated desktop/mobile behavior.
 
-The next release should deploy the application to Laravel Cloud, resolve the production database/storage choice, and complete mobile, accessibility, PWA and HTTPS smoke validation before declaring V1 released.
+Future work should be selected deliberately from the expansion paths in section 17 rather than treated as part of the completed V1 scope.
