@@ -33,6 +33,11 @@ class MapPageTest extends TestCase
             ->assertSee('Lower-tier')
             ->assertSee('Explore a division')
             ->assertSee('Select a division')
+            ->assertSee('data-area-details', false)
+            ->assertSee('Close area details')
+            ->assertSee('Hierarchy')
+            ->assertSee('Municipalities')
+            ->assertSee('areas\/__GEOMETRY_KEY__', false)
             ->assertDontSee('Laravel has an incredibly rich ecosystem');
     }
 }

@@ -16,7 +16,7 @@ From a fresh clone, run:
 composer run setup
 ```
 
-This installs PHP and JavaScript dependencies, creates `.env` from `.env.example`, generates a local application key, creates and migrates `database/database.sqlite`, and builds the frontend assets.
+This installs PHP and JavaScript dependencies, creates `.env` from `.env.example`, generates a local application key, creates and migrates `database/database.sqlite`, seeds the geography metadata, and builds the frontend assets.
 
 Start the local development services with:
 
@@ -34,7 +34,7 @@ composer run lint   # Check PHP formatting without changing files
 composer run format # Apply PHP formatting
 npm run dev         # Run only the Vite development server
 npm run build       # Create a production asset build
-php artisan migrate # Apply pending database migrations
+php artisan migrate --seed # Apply migrations and seed geography metadata
 ```
 
 ## Geography data

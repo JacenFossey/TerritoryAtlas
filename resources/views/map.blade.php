@@ -45,7 +45,39 @@
                     <select id="region-select" class="legend-selection" data-region-select disabled>
                         <option value="">Select a division</option>
                     </select>
+                    <p class="legend-selection-status" data-region-select-status aria-live="polite">Loading divisions…</p>
                     <p class="sr-only" data-selected-region aria-live="polite"></p>
+                </aside>
+
+                <aside class="area-details" data-area-details aria-labelledby="area-details-name" hidden>
+                    <div class="area-details-header">
+                        <div>
+                            <p class="area-details-type" data-area-type></p>
+                            <h2 id="area-details-name" data-area-name tabindex="-1"></h2>
+                        </div>
+                        <button class="area-details-close" type="button" data-area-details-close aria-label="Close area details">×</button>
+                    </div>
+
+                    <p class="area-details-feedback" data-area-feedback aria-live="polite"></p>
+
+                    <div class="area-details-content" data-area-content hidden>
+                        <p class="area-details-status" data-area-status></p>
+
+                        <section class="area-details-section" aria-labelledby="area-context-heading">
+                            <h3 id="area-context-heading">Context</h3>
+                            <ul class="area-details-memberships" data-area-memberships></ul>
+                        </section>
+
+                        <nav class="area-details-section" aria-labelledby="area-hierarchy-heading">
+                            <h3 id="area-hierarchy-heading">Hierarchy</h3>
+                            <ol class="area-details-hierarchy" data-area-hierarchy></ol>
+                        </nav>
+
+                        <section class="area-details-section" data-area-children-section aria-labelledby="area-children-heading" hidden>
+                            <h3 id="area-children-heading">Municipalities</h3>
+                            <ul class="area-details-children" data-area-children></ul>
+                        </section>
+                    </div>
                 </aside>
             </div>
         </main>
@@ -55,6 +87,7 @@
             'attribution' => config('map.attribution'),
             'majorBoundariesUrl' => config('map.major_boundaries_url'),
             'lowerBoundariesUrl' => config('map.lower_boundaries_url'),
+            'areaDetailsUrl' => route('areas.show', ['area' => '__GEOMETRY_KEY__']),
             'bounds' => [
                 config('map.initial_bounds.southwest'),
                 config('map.initial_bounds.northeast'),

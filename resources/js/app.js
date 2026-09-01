@@ -36,7 +36,19 @@ if (mapContainer && mapConfigElement) {
     const loadingMessage = mapContainer.querySelector('[data-map-loading]');
     const selectedRegionMessage = document.querySelector('[data-selected-region]');
     const regionSelect = document.querySelector('[data-region-select]');
+    const regionSelectStatus = document.querySelector('[data-region-select-status]');
     const layerToggles = document.querySelectorAll('[data-layer-toggle]');
+    const areaDetails = document.querySelector('[data-area-details]');
+    const areaDetailsName = document.querySelector('[data-area-name]');
+    const areaDetailsType = document.querySelector('[data-area-type]');
+    const areaDetailsStatus = document.querySelector('[data-area-status]');
+    const areaDetailsFeedback = document.querySelector('[data-area-feedback]');
+    const areaDetailsContent = document.querySelector('[data-area-content]');
+    const areaMemberships = document.querySelector('[data-area-memberships]');
+    const areaHierarchy = document.querySelector('[data-area-hierarchy]');
+    const areaChildrenSection = document.querySelector('[data-area-children-section]');
+    const areaChildren = document.querySelector('[data-area-children]');
+    const areaDetailsClose = document.querySelector('[data-area-details-close]');
 
     map.on('error', ({ error }) => {
         console.error('Map failed to load:', error?.message ?? error);
@@ -62,23 +74,163 @@ if (mapContainer && mapConfigElement) {
         const basemapPlaceLabelIds = basemapLayers
             .filter((layer) => layer.type === 'symbol' && layer['source-layer'] === 'place')
             .map(({ id }) => id);
+        const mapWorkspace = document.querySelector('.map-workspace');
         let hoveredRegionId = null;
-        let selectedRegionId = null;
+        let selectedFeature = null;
+        let areaDetailsRequest = null;
 
-        const selectRegion = (featureId, regionId, regionName) => {
-            if (selectedRegionId !== null) {
-                map.setFeatureState({ source: sourceId, id: selectedRegionId }, { selected: false });
+        const sourceForAreaType = (areaType) => (
+            areaType === 'lower_tier' ? municipalSourceId : sourceId
+        );
+
+        const formatAreaType = (areaType) => {
+            const labels = {
+                ggh: 'Regional context',
+                upper_tier: 'Upper-tier municipality',
+                single_tier: 'Single-tier municipality',
+                lower_tier: 'Lower-tier municipality',
+            };
+
+            return labels[areaType] ?? areaType.replaceAll('_', ' ');
+        };
+
+        const clearSelection = () => {
+            if (selectedFeature !== null) {
+                map.setFeatureState(selectedFeature, { selected: false });
             }
 
-            selectedRegionId = featureId;
-            map.setFeatureState({ source: sourceId, id: selectedRegionId }, { selected: true });
+            selectedFeature = null;
+        };
 
-            if (regionSelect && regionSelect.value !== regionId) {
-                regionSelect.value = regionId;
+        const createAreaListItem = (area) => {
+            const item = document.createElement('li');
+
+            if (!area.geometry_key) {
+                item.textContent = area.name;
+
+                return item;
+            }
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'area-details-link';
+            button.textContent = area.name;
+            button.addEventListener('click', () => {
+                selectArea({
+                    source: sourceForAreaType(area.area_type),
+                    featureId: area.geometry_key,
+                    geometryKey: area.geometry_key,
+                    name: area.name,
+                });
+            });
+            item.append(button);
+
+            return item;
+        };
+
+        const replaceList = (list, areas) => {
+            list.replaceChildren(...areas.map(createAreaListItem));
+        };
+
+        const renderAreaDetails = (area) => {
+            areaDetailsName.textContent = area.name;
+            areaDetailsType.textContent = formatAreaType(area.area_type);
+            areaDetailsStatus.textContent = area.administrative_status ?? '';
+
+            const memberships = [];
+
+            if (area.is_ggh) {
+                memberships.push('Greater Golden Horseshoe');
+            }
+
+            if (area.is_gta) {
+                memberships.push('Greater Toronto Area');
+            }
+
+            replaceList(
+                areaMemberships,
+                memberships.map((name) => ({ name, geometry_key: null })),
+            );
+            replaceList(areaHierarchy, area.hierarchy);
+            replaceList(areaChildren, area.children);
+            areaChildrenSection.hidden = area.children.length === 0;
+            areaDetailsFeedback.textContent = '';
+            areaDetailsContent.hidden = false;
+            areaDetailsName.focus({ preventScroll: true });
+        };
+
+        const selectArea = ({ source, featureId, geometryKey, name }) => {
+            clearSelection();
+            selectedFeature = { source, id: featureId };
+            map.setFeatureState(selectedFeature, { selected: true });
+
+            if (regionSelect) {
+                regionSelect.value = source === sourceId ? geometryKey : '';
             }
 
             if (selectedRegionMessage) {
-                selectedRegionMessage.textContent = `${regionName} selected`;
+                selectedRegionMessage.textContent = `${name} selected`;
+            }
+
+            areaDetailsRequest?.abort();
+            const request = new AbortController();
+            areaDetailsRequest = request;
+            areaDetails.hidden = false;
+            mapWorkspace?.classList.add('details-open');
+            areaDetailsName.textContent = name;
+            areaDetailsType.textContent = '';
+            areaDetailsFeedback.textContent = `Loading details for ${name}…`;
+            areaDetailsContent.hidden = true;
+
+            const detailsUrl = mapConfig.areaDetailsUrl.replace(
+                '__GEOMETRY_KEY__',
+                encodeURIComponent(geometryKey),
+            );
+
+            fetch(detailsUrl, {
+                headers: {
+                    Accept: 'application/json',
+                },
+                signal: request.signal,
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`Area details request failed with status ${response.status}`);
+                    }
+
+                    return response.json();
+                })
+                .then(({ data }) => {
+                    if (areaDetailsRequest !== request) {
+                        return;
+                    }
+
+                    renderAreaDetails(data);
+                })
+                .catch((error) => {
+                    if (error.name === 'AbortError' || areaDetailsRequest !== request) {
+                        return;
+                    }
+
+                    console.error('Area details failed to load:', error?.message ?? error);
+                    areaDetailsFeedback.textContent = 'Unable to load details for this area.';
+                });
+        };
+
+        const dismissAreaDetails = () => {
+            areaDetailsRequest?.abort();
+            areaDetailsRequest = null;
+            clearSelection();
+            areaDetails.hidden = true;
+            mapWorkspace?.classList.remove('details-open');
+
+            if (regionSelect) {
+                regionSelect.value = '';
+                regionSelect.focus({ preventScroll: true });
+            }
+
+            if (selectedRegionMessage) {
+                selectedRegionMessage.textContent = 'Area selection dismissed';
             }
         };
 
@@ -96,19 +248,29 @@ if (mapContainer && mapConfigElement) {
                 minzoom: 7.25,
                 paint: {
                     'fill-color': [
-                        'match',
-                        ['%', ['to-number', ['get', 'source_identifier']], 5],
-                        0,
-                        '#e8b86d',
-                        1,
-                        '#79b8a4',
-                        2,
-                        '#8fa8cf',
-                        3,
-                        '#d99a8d',
-                        '#b5a1c9',
+                        'case',
+                        ['boolean', ['feature-state', 'selected'], false],
+                        '#d9772f',
+                        [
+                            'match',
+                            ['%', ['to-number', ['get', 'source_identifier']], 5],
+                            0,
+                            '#e8b86d',
+                            1,
+                            '#79b8a4',
+                            2,
+                            '#8fa8cf',
+                            3,
+                            '#d99a8d',
+                            '#b5a1c9',
+                        ],
                     ],
-                    'fill-opacity': 0.2,
+                    'fill-opacity': [
+                        'case',
+                        ['boolean', ['feature-state', 'selected'], false],
+                        0.5,
+                        0.2,
+                    ],
                 },
             },
             firstBasemapLabelId,
@@ -121,9 +283,19 @@ if (mapContainer && mapConfigElement) {
                 source: municipalSourceId,
                 minzoom: 7.25,
                 paint: {
-                    'line-color': '#385e61',
+                    'line-color': [
+                        'case',
+                        ['boolean', ['feature-state', 'selected'], false],
+                        '#8f3f18',
+                        '#385e61',
+                    ],
                     'line-opacity': 0.82,
-                    'line-width': ['interpolate', ['linear'], ['zoom'], 7.25, 0.8, 10, 1.4],
+                    'line-width': [
+                        'case',
+                        ['boolean', ['feature-state', 'selected'], false],
+                        3,
+                        ['interpolate', ['linear'], ['zoom'], 7.25, 0.8, 10, 1.4],
+                    ],
                 },
             },
             firstBasemapLabelId,
@@ -275,7 +447,7 @@ if (mapContainer && mapConfigElement) {
                 })
                 .then(({ features }) => {
                     const regions = features
-                        .map(({ id, properties }) => ({ id, name: properties.name }))
+                        .map(({ properties }) => ({ id: properties.id, name: properties.name }))
                         .sort((firstRegion, secondRegion) => firstRegion.name.localeCompare(secondRegion.name));
 
                     for (const region of regions) {
@@ -286,9 +458,11 @@ if (mapContainer && mapConfigElement) {
                     }
 
                     regionSelect.disabled = false;
+                    regionSelectStatus.textContent = '';
                 })
                 .catch((error) => {
                     console.error('Region selector failed to load:', error?.message ?? error);
+                    regionSelectStatus.textContent = 'Division selector is unavailable.';
                 });
 
             regionSelect.addEventListener('change', () => {
@@ -296,7 +470,12 @@ if (mapContainer && mapConfigElement) {
                     return;
                 }
 
-                selectRegion(regionSelect.value, regionSelect.value, regionSelect.selectedOptions[0].textContent);
+                selectArea({
+                    source: sourceId,
+                    featureId: regionSelect.value,
+                    geometryKey: regionSelect.value,
+                    name: regionSelect.selectedOptions[0].textContent,
+                });
             });
         }
 
@@ -325,14 +504,38 @@ if (mapContainer && mapConfigElement) {
             map.getCanvas().style.cursor = '';
         });
 
-        map.on('click', fillLayerId, ({ features }) => {
-            const region = features?.[0];
+        map.on('mouseenter', municipalLayerIds[0], () => {
+            map.getCanvas().style.cursor = 'pointer';
+        });
 
-            if (!region) {
+        map.on('mouseleave', municipalLayerIds[0], () => {
+            map.getCanvas().style.cursor = '';
+        });
+
+        map.on('click', ({ point }) => {
+            const area = map.queryRenderedFeatures(point, {
+                layers: [municipalLayerIds[0], fillLayerId],
+            })[0];
+
+            if (!area) {
                 return;
             }
 
-            selectRegion(region.id, region.properties.id, region.properties.name);
+            const geometryKey = area.properties.id;
+
+            selectArea({
+                source: area.source,
+                featureId: geometryKey,
+                geometryKey,
+                name: area.properties.name,
+            });
+        });
+
+        areaDetailsClose?.addEventListener('click', dismissAreaDetails);
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !areaDetails.hidden) {
+                dismissAreaDetails();
+            }
         });
 
         loadingMessage?.remove();
