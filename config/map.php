@@ -10,6 +10,8 @@ return [
 
     'major_boundaries_url' => '/geo/upper-single-tier.geojson',
 
+    'lower_boundaries_url' => '/geo/lower-tier.geojson',
+
     'initial_bounds' => [
         'southwest' => [-81.15, 42.65],
         'northeast' => [-77.10, 44.95],

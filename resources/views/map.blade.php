@@ -28,10 +28,17 @@
                 </div>
 
                 <aside class="map-legend" aria-label="Map legend">
-                    <h2>Major divisions</h2>
+                    <h2>Map layers</h2>
+                    <fieldset class="legend-layers">
+                        <legend class="sr-only">Map layers</legend>
+                        <label><input type="checkbox" data-layer-toggle="major" checked> Major divisions</label>
+                        <label><input type="checkbox" data-layer-toggle="municipal" checked> Lower-tier municipalities</label>
+                    </fieldset>
+                    <h2 class="legend-key-heading">Major divisions</h2>
                     <ul>
                         <li><span class="legend-swatch legend-swatch-upper" aria-hidden="true"></span>Upper-tier</li>
                         <li><span class="legend-swatch legend-swatch-single" aria-hidden="true"></span>Single-tier</li>
+                        <li><span class="legend-swatch legend-swatch-lower" aria-hidden="true"></span>Lower-tier</li>
                         <li><span class="legend-swatch legend-swatch-selected" aria-hidden="true"></span>Selected</li>
                     </ul>
                     <label class="legend-selection-label" for="region-select">Explore a division</label>
@@ -47,6 +54,7 @@
             'styleUrl' => config('map.style_url'),
             'attribution' => config('map.attribution'),
             'majorBoundariesUrl' => config('map.major_boundaries_url'),
+            'lowerBoundariesUrl' => config('map.lower_boundaries_url'),
             'bounds' => [
                 config('map.initial_bounds.southwest'),
                 config('map.initial_bounds.northeast'),

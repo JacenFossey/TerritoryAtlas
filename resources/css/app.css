@@ -89,6 +89,32 @@ body {
     letter-spacing: 0.01em;
 }
 
+.legend-layers {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0.45rem 0 0;
+    border: 0;
+    padding: 0;
+}
+
+.legend-layers label {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    cursor: pointer;
+}
+
+.legend-layers input {
+    accent-color: #175f50;
+    margin: 0;
+}
+
+.legend-key-heading {
+    margin-top: 0.7rem;
+    border-top: 1px solid #d7d9d3;
+    padding-top: 0.5rem;
+}
+
 .map-legend ul {
     display: grid;
     gap: 0.3rem;
@@ -113,6 +139,10 @@ body {
 
 .legend-swatch-single {
     background: rgb(79 140 120 / 42%);
+}
+
+.legend-swatch-lower {
+    background: linear-gradient(90deg, #e8b86d 0 20%, #79b8a4 20% 40%, #8fa8cf 40% 60%, #d99a8d 60% 80%, #b5a1c9 80%);
 }
 
 .legend-swatch-selected {

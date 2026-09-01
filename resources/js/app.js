@@ -36,6 +36,7 @@ if (mapContainer && mapConfigElement) {
     const loadingMessage = mapContainer.querySelector('[data-map-loading]');
     const selectedRegionMessage = document.querySelector('[data-selected-region]');
     const regionSelect = document.querySelector('[data-region-select]');
+    const layerToggles = document.querySelectorAll('[data-layer-toggle]');
 
     map.on('error', ({ error }) => {
         console.error('Map failed to load:', error?.message ?? error);
@@ -50,7 +51,17 @@ if (mapContainer && mapConfigElement) {
         const fillLayerId = 'major-boundaries-fill';
         const outlineLayerId = 'major-boundaries-outline';
         const labelLayerId = 'major-boundaries-label';
-        const firstBasemapLabelId = map.getStyle().layers.find(({ type }) => type === 'symbol')?.id;
+        const municipalSourceId = 'lower-boundaries';
+        const municipalLayerIds = [
+            'lower-boundaries-fill',
+            'lower-boundaries-outline',
+            'lower-boundaries-label',
+        ];
+        const basemapLayers = map.getStyle().layers;
+        const firstBasemapLabelId = basemapLayers.find(({ type }) => type === 'symbol')?.id;
+        const basemapPlaceLabelIds = basemapLayers
+            .filter((layer) => layer.type === 'symbol' && layer['source-layer'] === 'place')
+            .map(({ id }) => id);
         let hoveredRegionId = null;
         let selectedRegionId = null;
 
@@ -70,6 +81,75 @@ if (mapContainer && mapConfigElement) {
                 selectedRegionMessage.textContent = `${regionName} selected`;
             }
         };
+
+        map.addSource(municipalSourceId, {
+            type: 'geojson',
+            data: mapConfig.lowerBoundariesUrl,
+            promoteId: 'id',
+        });
+
+        map.addLayer(
+            {
+                id: municipalLayerIds[0],
+                type: 'fill',
+                source: municipalSourceId,
+                minzoom: 7.25,
+                paint: {
+                    'fill-color': [
+                        'match',
+                        ['%', ['to-number', ['get', 'source_identifier']], 5],
+                        0,
+                        '#e8b86d',
+                        1,
+                        '#79b8a4',
+                        2,
+                        '#8fa8cf',
+                        3,
+                        '#d99a8d',
+                        '#b5a1c9',
+                    ],
+                    'fill-opacity': 0.2,
+                },
+            },
+            firstBasemapLabelId,
+        );
+
+        map.addLayer(
+            {
+                id: municipalLayerIds[1],
+                type: 'line',
+                source: municipalSourceId,
+                minzoom: 7.25,
+                paint: {
+                    'line-color': '#385e61',
+                    'line-opacity': 0.82,
+                    'line-width': ['interpolate', ['linear'], ['zoom'], 7.25, 0.8, 10, 1.4],
+                },
+            },
+            firstBasemapLabelId,
+        );
+
+        map.addLayer(
+            {
+                id: municipalLayerIds[2],
+                type: 'symbol',
+                source: municipalSourceId,
+                minzoom: 8,
+                layout: {
+                    'text-field': ['get', 'name'],
+                    'text-font': ['Noto Sans Regular'],
+                    'text-size': ['interpolate', ['linear'], ['zoom'], 8, 11.7, 11, 15.6],
+                    'text-max-width': 7,
+                    'text-padding': 2,
+                },
+                paint: {
+                    'text-color': '#405e61',
+                    'text-halo-color': 'rgba(247, 246, 242, 0.9)',
+                    'text-halo-width': 1.25,
+                },
+            },
+            firstBasemapLabelId,
+        );
 
         map.addSource(sourceId, {
             type: 'geojson',
@@ -136,7 +216,7 @@ if (mapContainer && mapConfigElement) {
             layout: {
                 'text-field': ['get', 'name'],
                 'text-font': ['Noto Sans Regular'],
-                'text-size': ['interpolate', ['linear'], ['zoom'], 5.25, 10, 8, 13],
+                'text-size': ['interpolate', ['linear'], ['zoom'], 5.25, 13, 8, 16.9],
                 'text-max-width': 8,
                 'text-padding': 3,
             },
@@ -146,6 +226,41 @@ if (mapContainer && mapConfigElement) {
                 'text-halo-width': 1.5,
             },
         });
+
+        map.moveLayer(municipalLayerIds[0], outlineLayerId);
+        map.moveLayer(municipalLayerIds[1], outlineLayerId);
+        map.moveLayer(municipalLayerIds[2], labelLayerId);
+
+        for (const layerId of basemapPlaceLabelIds) {
+            const textSize = map.getLayoutProperty(layerId, 'text-size');
+
+            if (typeof textSize === 'number') {
+                map.setLayoutProperty(layerId, 'text-size', textSize * 0.7);
+            } else if (Array.isArray(textSize) && textSize[0] === 'interpolate') {
+                const smallerTextSize = textSize.map((value, index) => (
+                    index >= 4 && index % 2 === 0 && typeof value === 'number' ? value * 0.7 : value
+                ));
+
+                map.setLayoutProperty(layerId, 'text-size', smallerTextSize);
+            }
+        }
+
+        const setLayerVisibility = (layerIds, visible) => {
+            for (const layerId of layerIds) {
+                map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
+            }
+        };
+
+        for (const toggle of layerToggles) {
+            toggle.addEventListener('change', () => {
+                const isMajorToggle = toggle.dataset.layerToggle === 'major';
+
+                setLayerVisibility(
+                    isMajorToggle ? [fillLayerId, outlineLayerId, labelLayerId] : municipalLayerIds,
+                    toggle.checked,
+                );
+            });
+        }
 
         if (regionSelect) {
             fetch(mapConfig.majorBoundariesUrl)
