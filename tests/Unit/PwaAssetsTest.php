@@ -49,7 +49,10 @@ class PwaAssetsTest extends TestCase
 
     public function test_service_worker_asset_exists(): void
     {
-        $this->assertFileExists(dirname(__DIR__, 2).'/public/sw.js');
+        $serviceWorker = file_get_contents(dirname(__DIR__, 2).'/public/sw.js');
+
+        $this->assertIsString($serviceWorker);
+        $this->assertStringContainsString("startsWith('/geography/')", $serviceWorker);
     }
 
     public function test_production_assets_have_explicit_apache_cache_policies(): void

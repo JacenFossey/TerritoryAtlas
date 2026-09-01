@@ -8,11 +8,11 @@ return [
         '<a href="https://openfreemap.org/" target="_blank">OpenFreeMap</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
     ),
 
-    'major_boundaries_url' => '/geo/upper-single-tier.geojson',
+    'major_boundaries_url' => '/geography/upper-single-tier.geojson',
 
-    'lower_boundaries_url' => '/geo/lower-tier.geojson',
+    'lower_boundaries_url' => '/geography/lower-tier.geojson',
 
-    'common_places_url' => '/geo/common-places.geojson',
+    'common_places_url' => '/geography/common-places.geojson',
 
     'initial_bounds' => [
         'southwest' => [-81.15, 42.65],

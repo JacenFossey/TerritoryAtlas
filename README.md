@@ -49,9 +49,19 @@ php artisan optimize
 
 Set `APP_ENV=production`, `APP_DEBUG=false`, a stable `APP_KEY`, and the production `APP_URL`. Set `MAP_STYLE_URL` and `MAP_ATTRIBUTION` when using a basemap provider other than the defaults. Ensure the PHP/web-server user can write to `storage`, `bootstrap/cache`, and the SQLite database and its parent directory. Do not expose `.env` or the database through the document root.
 
-Serve compressed responses and retain the cache policy in `public/.htaccess` (or its equivalent in Nginx/Laravel Cloud): hashed `/build/` assets cache for one year, while replaceable `/geo/` data caches for one hour with stale revalidation. After deployment, verify `/`, `/manifest.webmanifest`, `/sw.js`, all three `/geo/` files, search, and one area-detail response. Confirm the browser reports a registered service worker over HTTPS.
+Serve compressed responses and retain the cache policy in `public/.htaccess` (or its equivalent in Nginx): hashed `/build/` assets cache for one year. The map requests replaceable geography through Laravel's `/geography/` endpoints so their one-hour cache policy and stale revalidation also work on Laravel Cloud, which does not use the Apache configuration. After deployment, verify `/`, `/manifest.webmanifest`, `/sw.js`, all three `/geography/` endpoints, search, and one area-detail response. Confirm the browser reports a registered service worker over HTTPS.
 
-Run queue workers, Redis, or a separate database server only if future features require them; V1 does not.
+### Laravel Cloud
+
+The initial production environment is deployed at <https://territoryatlas-production-ah4co2.laravel.cloud/>. Attach a managed MySQL database to the production environment; do not use SQLite on Laravel Cloud's ephemeral application filesystem. Laravel Cloud injects the attached database credentials automatically.
+
+Configure a stable `APP_KEY`, `APP_ENV=production`, `APP_DEBUG=false`, and the production `APP_URL` in the environment settings. Keep the build command configured to install production dependencies and run `npm run build`. Use this deploy command so each release applies the schema and idempotent geography seed data before going live:
+
+```bash
+php artisan migrate --force && php artisan db:seed --force
+```
+
+Use `/up` as the environment health endpoint. Run queue workers, Redis, or object storage only if future features require them; V1 does not.
 
 ## Common commands
 

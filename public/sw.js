@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'territory-atlas-';
-const SHELL_CACHE = `${CACHE_PREFIX}shell-v1`;
+const SHELL_CACHE = `${CACHE_PREFIX}shell-v2`;
 const SHELL_FILES = [
     '/',
     '/manifest.webmanifest',
@@ -151,7 +151,7 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    if (url.pathname.startsWith('/geo/')) {
+    if (url.pathname.startsWith('/geography/')) {
         event.respondWith(staleWhileRevalidate(request, event));
 
         return;
