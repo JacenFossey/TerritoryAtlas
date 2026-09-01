@@ -13,8 +13,35 @@
     <body>
         <main class="map-shell">
             <header class="app-header">
-                <h1>{{ config('app.name') }}</h1>
-                <p>Greater Golden Horseshoe</p>
+                <div class="app-brand">
+                    <h1>{{ config('app.name') }}</h1>
+                    <p>Greater Golden Horseshoe</p>
+                </div>
+
+                <div class="area-search" data-area-search>
+                    <label class="sr-only" for="area-search-input">Search places</label>
+                    <input
+                        id="area-search-input"
+                        class="area-search-input"
+                        type="search"
+                        role="combobox"
+                        placeholder="Search places…"
+                        maxlength="50"
+                        autocomplete="off"
+                        aria-autocomplete="list"
+                        aria-controls="area-search-results"
+                        aria-expanded="false"
+                        data-area-search-input
+                    >
+                    <ul
+                        id="area-search-results"
+                        class="area-search-results"
+                        role="listbox"
+                        data-area-search-results
+                        hidden
+                    ></ul>
+                    <p class="area-search-feedback" data-area-search-feedback aria-live="polite"></p>
+                </div>
             </header>
 
             <div class="map-workspace">
@@ -88,6 +115,7 @@
             'majorBoundariesUrl' => config('map.major_boundaries_url'),
             'lowerBoundariesUrl' => config('map.lower_boundaries_url'),
             'areaDetailsUrl' => route('areas.show', ['area' => '__GEOMETRY_KEY__']),
+            'areaSearchUrl' => route('areas.search'),
             'bounds' => [
                 config('map.initial_bounds.southwest'),
                 config('map.initial_bounds.northeast'),

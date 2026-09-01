@@ -49,6 +49,10 @@ if (mapContainer && mapConfigElement) {
     const areaChildrenSection = document.querySelector('[data-area-children-section]');
     const areaChildren = document.querySelector('[data-area-children]');
     const areaDetailsClose = document.querySelector('[data-area-details-close]');
+    const areaSearch = document.querySelector('[data-area-search]');
+    const areaSearchInput = document.querySelector('[data-area-search-input]');
+    const areaSearchResults = document.querySelector('[data-area-search-results]');
+    const areaSearchFeedback = document.querySelector('[data-area-search-feedback]');
 
     map.on('error', ({ error }) => {
         console.error('Map failed to load:', error?.message ?? error);
@@ -78,6 +82,22 @@ if (mapContainer && mapConfigElement) {
         let hoveredRegionId = null;
         let selectedFeature = null;
         let areaDetailsRequest = null;
+        let areaSearchRequest = null;
+        let areaSearchTimer = null;
+        let searchResults = [];
+        let activeSearchResultIndex = -1;
+
+        const fetchBoundaryCollection = (url) => fetch(url).then((response) => {
+            if (!response.ok) {
+                throw new Error(`Boundary request failed with status ${response.status}`);
+            }
+
+            return response.json();
+        });
+        const boundaryCollections = new globalThis.Map([
+            [sourceId, fetchBoundaryCollection(mapConfig.majorBoundariesUrl)],
+            [municipalSourceId, fetchBoundaryCollection(mapConfig.lowerBoundariesUrl)],
+        ]);
 
         const sourceForAreaType = (areaType) => (
             areaType === 'lower_tier' ? municipalSourceId : sourceId
@@ -216,6 +236,204 @@ if (mapContainer && mapConfigElement) {
                     areaDetailsFeedback.textContent = 'Unable to load details for this area.';
                 });
         };
+
+        const geometryBounds = (geometry) => {
+            let west = Infinity;
+            let south = Infinity;
+            let east = -Infinity;
+            let north = -Infinity;
+
+            const includeCoordinates = (coordinates) => {
+                if (typeof coordinates[0] === 'number') {
+                    west = Math.min(west, coordinates[0]);
+                    south = Math.min(south, coordinates[1]);
+                    east = Math.max(east, coordinates[0]);
+                    north = Math.max(north, coordinates[1]);
+
+                    return;
+                }
+
+                for (const childCoordinates of coordinates) {
+                    includeCoordinates(childCoordinates);
+                }
+            };
+
+            includeCoordinates(geometry.coordinates);
+
+            return [[west, south], [east, north]];
+        };
+
+        const focusArea = (source, geometryKey) => {
+            boundaryCollections.get(source)
+                ?.then(({ features }) => {
+                    const feature = features.find(({ properties }) => properties.id === geometryKey);
+
+                    if (!feature) {
+                        return;
+                    }
+
+                    map.fitBounds(geometryBounds(feature.geometry), {
+                        padding: 48,
+                        maxZoom: 10,
+                        duration: 700,
+                    });
+                })
+                .catch((error) => {
+                    console.error('Unable to focus searched area:', error?.message ?? error);
+                });
+        };
+
+        const setActiveSearchResult = (index) => {
+            const options = areaSearchResults?.querySelectorAll('[role="option"]') ?? [];
+            activeSearchResultIndex = index;
+
+            for (const [optionIndex, option] of options.entries()) {
+                const isActive = optionIndex === index;
+                option.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            }
+
+            const activeOption = options[index];
+
+            if (activeOption) {
+                areaSearchInput?.setAttribute('aria-activedescendant', activeOption.id);
+                activeOption.scrollIntoView({ block: 'nearest' });
+            } else {
+                areaSearchInput?.removeAttribute('aria-activedescendant');
+            }
+        };
+
+        const closeSearchResults = () => {
+            window.clearTimeout(areaSearchTimer);
+            areaSearchTimer = null;
+            areaSearchRequest?.abort();
+            areaSearchRequest = null;
+            searchResults = [];
+            activeSearchResultIndex = -1;
+            areaSearchResults?.replaceChildren();
+
+            if (areaSearchResults) {
+                areaSearchResults.hidden = true;
+            }
+
+            areaSearchInput?.setAttribute('aria-expanded', 'false');
+            areaSearchInput?.removeAttribute('aria-activedescendant');
+        };
+
+        const chooseSearchResult = (area) => {
+            const source = sourceForAreaType(area.area_type);
+            areaSearchInput.value = area.name;
+            closeSearchResults();
+            areaSearchFeedback.textContent = `${area.name} selected`;
+            selectArea({
+                source,
+                featureId: area.geometry_key,
+                geometryKey: area.geometry_key,
+                name: area.name,
+            });
+            focusArea(source, area.geometry_key);
+        };
+
+        const renderSearchResults = (areas) => {
+            searchResults = areas;
+            activeSearchResultIndex = -1;
+            const options = areas.map((area, index) => {
+                const option = document.createElement('li');
+                option.id = `area-search-option-${index}`;
+                option.className = 'area-search-option';
+                option.role = 'option';
+                option.setAttribute('aria-selected', 'false');
+
+                const name = document.createElement('strong');
+                name.textContent = area.name;
+                const subtitle = document.createElement('span');
+                subtitle.textContent = area.subtitle;
+                option.append(name, subtitle);
+                option.addEventListener('click', () => chooseSearchResult(area));
+                option.addEventListener('pointermove', () => setActiveSearchResult(index));
+
+                return option;
+            });
+
+            areaSearchResults.replaceChildren(...options);
+            areaSearchResults.hidden = areas.length === 0;
+            areaSearchInput.setAttribute('aria-expanded', areas.length > 0 ? 'true' : 'false');
+            areaSearchFeedback.textContent = areas.length === 0
+                ? 'No matching places found.'
+                : `${areas.length} ${areas.length === 1 ? 'place' : 'places'} found.`;
+        };
+
+        const searchAreas = (query) => {
+            areaSearchRequest?.abort();
+            const request = new AbortController();
+            areaSearchRequest = request;
+            const url = new URL(mapConfig.areaSearchUrl, window.location.href);
+            url.searchParams.set('q', query);
+            areaSearchFeedback.textContent = 'Searching…';
+
+            fetch(url, {
+                headers: { Accept: 'application/json' },
+                signal: request.signal,
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`Area search failed with status ${response.status}`);
+                    }
+
+                    return response.json();
+                })
+                .then(({ data }) => {
+                    if (areaSearchRequest === request) {
+                        renderSearchResults(data);
+                    }
+                })
+                .catch((error) => {
+                    if (error.name === 'AbortError' || areaSearchRequest !== request) {
+                        return;
+                    }
+
+                    console.error('Area search failed:', error?.message ?? error);
+                    closeSearchResults();
+                    areaSearchFeedback.textContent = 'Search is unavailable.';
+                });
+        };
+
+        areaSearchInput?.addEventListener('input', () => {
+            window.clearTimeout(areaSearchTimer);
+            areaSearchRequest?.abort();
+            const query = areaSearchInput.value.trim();
+
+            if (!query) {
+                closeSearchResults();
+                areaSearchFeedback.textContent = '';
+
+                return;
+            }
+
+            areaSearchTimer = window.setTimeout(() => searchAreas(query), 180);
+        });
+
+        areaSearchInput?.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowDown' && searchResults.length > 0) {
+                event.preventDefault();
+                setActiveSearchResult((activeSearchResultIndex + 1) % searchResults.length);
+            } else if (event.key === 'ArrowUp' && searchResults.length > 0) {
+                event.preventDefault();
+                setActiveSearchResult(
+                    activeSearchResultIndex <= 0 ? searchResults.length - 1 : activeSearchResultIndex - 1,
+                );
+            } else if (event.key === 'Enter' && activeSearchResultIndex >= 0) {
+                event.preventDefault();
+                chooseSearchResult(searchResults[activeSearchResultIndex]);
+            } else if (event.key === 'Escape') {
+                closeSearchResults();
+            }
+        });
+
+        document.addEventListener('pointerdown', (event) => {
+            if (areaSearch && !areaSearch.contains(event.target)) {
+                closeSearchResults();
+            }
+        });
 
         const dismissAreaDetails = () => {
             areaDetailsRequest?.abort();
@@ -437,14 +655,7 @@ if (mapContainer && mapConfigElement) {
         }
 
         if (regionSelect) {
-            fetch(mapConfig.majorBoundariesUrl)
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error(`Boundary request failed with status ${response.status}`);
-                    }
-
-                    return response.json();
-                })
+            boundaryCollections.get(sourceId)
                 .then(({ features }) => {
                     const regions = features
                         .map(({ properties }) => ({ id: properties.id, name: properties.name }))
