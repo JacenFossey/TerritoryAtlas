@@ -1,6 +1,6 @@
 # TerritoryAtlas — Product & Implementation Plan
 
-> **Status:** PRs 0–9 complete; next up is PR 10 (PWA)
+> **Status:** PRs 0–10 complete; next up is PR 11 (V1 polish and release)
 > **Primary goal:** Build an installable, map-first application that makes the geography of the Greater Golden Horseshoe intuitive: search a place someone mentions, immediately understand where it is, what larger areas contain it, and what is nearby.
 
 ---
@@ -895,7 +895,7 @@ Build in small, reviewable PRs. Each PR should leave `main` in a working state.
 - “Nearby” does not pretend to be an exact travel-time calculation.
 - No route engine is introduced.
 
-### PR 10 — PWA
+### PR 10 — PWA ✅ Complete
 
 **Goal:** Make TerritoryAtlas convenient to install and launch as an application.
 
@@ -1086,6 +1086,6 @@ The product should help build a mental model of the region through repeated use.
 
 ## 20. Immediate next step
 
-PRs 0–9 are complete. Start with **PR 10 — PWA**.
+PRs 0–10 are complete. Start with **PR 11 — Polish and V1 release**.
 
-The next release should add installability, manifest metadata, icons and safe application-shell caching without promising offline basemap support. After that, continue to PR 11 for V1 polish and release QA.
+The next release should focus on responsive QA, accessibility, loading/error states, performance, attribution, source information and deployment documentation before the V1 release.

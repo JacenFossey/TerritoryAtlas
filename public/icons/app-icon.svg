@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">TerritoryAtlas map marker</title>
+  <rect width="512" height="512" fill="#173c2b"/>
+  <path d="M92 150 194 104l124 45 102-45v258l-102 46-124-45-102 45Z" fill="none" stroke="#f7f6f2" stroke-width="28" stroke-linejoin="round"/>
+  <path d="M194 104v259M318 149v259" fill="none" stroke="#f7f6f2" stroke-width="20" stroke-linejoin="round" opacity=".72"/>
+  <path d="M256 139c-53 0-96 42-96 94 0 73 96 151 96 151s96-78 96-151c0-52-43-94-96-94Z" fill="#c88745" stroke="#173c2b" stroke-width="16"/>
+  <circle cx="256" cy="231" r="32" fill="#f7f6f2"/>
+</svg>

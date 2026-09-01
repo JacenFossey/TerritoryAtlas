@@ -1,6 +1,17 @@
 import { AttributionControl, Map, NavigationControl, setWorkerUrl } from 'maplibre-gl';
 import mapWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', {
+            scope: '/',
+            updateViaCache: 'none',
+        }).catch((error) => {
+            console.error('Service worker registration failed:', error);
+        });
+    });
+}
+
 const mapContainer = document.querySelector('#map');
 const mapConfigElement = document.querySelector('#map-config');
 

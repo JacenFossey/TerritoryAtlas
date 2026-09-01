@@ -6,6 +6,21 @@ use Tests\TestCase;
 
 class MapPageTest extends TestCase
 {
+    public function test_the_home_page_advertises_the_installable_application(): void
+    {
+        $response = $this->get('/');
+
+        $response
+            ->assertOk()
+            ->assertSee('rel="manifest"', false)
+            ->assertSee('manifest.webmanifest')
+            ->assertSee('rel="apple-touch-icon"', false)
+            ->assertSee('icons/apple-touch-icon.png')
+            ->assertSee('<meta name="mobile-web-app-capable" content="yes">', false)
+            ->assertSee('<meta name="apple-mobile-web-app-capable" content="yes">', false)
+            ->assertSee('<meta name="apple-mobile-web-app-status-bar-style" content="default">', false);
+    }
+
     public function test_the_home_page_displays_the_configured_map(): void
     {
         config()->set('map.style_url', 'https://maps.example.test/style.json');

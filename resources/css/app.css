@@ -40,7 +40,7 @@ body {
     align-items: center;
     gap: 1rem;
     border-bottom: 1px solid #d7d9d3;
-    padding: 0.65rem 1rem;
+    padding: max(0.65rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) 0.65rem max(1rem, env(safe-area-inset-left));
     background: #f7f6f2;
 }
 
@@ -481,7 +481,7 @@ body {
 @media (max-width: 48rem) {
     .app-header {
         grid-template-columns: auto minmax(10rem, 1fr);
-        padding-inline: 0.75rem;
+        padding-inline: max(0.75rem, env(safe-area-inset-left)) max(0.75rem, env(safe-area-inset-right));
     }
 
     .app-brand p {
@@ -494,7 +494,7 @@ body {
         min-height: auto;
         grid-template-columns: 1fr;
         gap: 0.45rem;
-        padding-block: 0.5rem;
+        padding: max(0.5rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right)) 0.5rem max(0.75rem, env(safe-area-inset-left));
     }
 
     .app-brand {
@@ -502,7 +502,7 @@ body {
     }
 
     .map-legend {
-        bottom: 1.5rem;
+        bottom: max(1.5rem, env(safe-area-inset-bottom));
         left: 0.5rem;
         width: 9.5rem;
     }

@@ -26,6 +26,12 @@ composer run dev
 
 The application is available at <http://localhost:8080> by default. Stop the development services with `Ctrl+C`.
 
+## Installing the web app
+
+After a production build is deployed over HTTPS, supported browsers can install TerritoryAtlas from their address-bar or browser-menu install action. Localhost is also treated as a secure context for development.
+
+The service worker caches the application shell and same-origin static geography after it is requested. It does not cache the external basemap, search responses, or area-detail responses, so an internet connection is still required for the complete map experience. Updated service workers take over after existing TerritoryAtlas tabs and installed-app windows close; bump the cache version in `public/sw.js` whenever cached shell behavior changes.
+
 ## Common commands
 
 ```bash
