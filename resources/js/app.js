@@ -252,14 +252,16 @@ if (mapContainer && mapConfigElement) {
         };
 
         for (const toggle of layerToggles) {
-            toggle.addEventListener('change', () => {
-                const isMajorToggle = toggle.dataset.layerToggle === 'major';
+            const isMajorToggle = toggle.dataset.layerToggle === 'major';
+            const layerIds = isMajorToggle
+                ? [fillLayerId, outlineLayerId, labelLayerId]
+                : municipalLayerIds;
+            const syncLayerVisibility = () => {
+                setLayerVisibility(layerIds, toggle.checked);
+            };
 
-                setLayerVisibility(
-                    isMajorToggle ? [fillLayerId, outlineLayerId, labelLayerId] : municipalLayerIds,
-                    toggle.checked,
-                );
-            });
+            syncLayerVisibility();
+            toggle.addEventListener('change', syncLayerVisibility);
         }
 
         if (regionSelect) {
