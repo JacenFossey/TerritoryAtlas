@@ -1,6 +1,6 @@
 # TerritoryAtlas — Product & Implementation Plan
 
-> **Status:** PRs 0–10 complete; next up is PR 11 (V1 polish and release)
+> **Status:** PRs 0–11 complete; next up is PR 12 (Laravel Cloud deployment and V1 validation)
 > **Primary goal:** Build an installable, map-first application that makes the geography of the Greater Golden Horseshoe intuitive: search a place someone mentions, immediately understand where it is, what larger areas contain it, and what is nearby.
 
 ---
@@ -912,7 +912,7 @@ Build in small, reviewable PRs. Each PR should leave `main` in a working state.
 - Basic shell loads gracefully under poor connectivity.
 - No claim of offline basemap support.
 
-### PR 11 — Polish and V1 release
+### PR 11 — Polish and V1 release ✅ Complete
 
 **Goal:** Turn the accumulated functionality into a coherent first release.
 
@@ -939,6 +939,31 @@ A user hears the word **Concord**, opens TerritoryAtlas, types `Concord`, select
 - what major road corridors and nearby areas surround it.
 
 If that experience is fast and obvious, V1 has accomplished its core job.
+
+### PR 12 — Laravel Cloud deployment and V1 validation
+
+**Goal:** Deploy TerritoryAtlas to a stable HTTPS environment and complete production/mobile validation for the V1 release.
+
+**Work**
+- Connect the GitHub repository to Laravel Cloud.
+- Configure production application, map-provider and environment settings without committing secrets.
+- Confirm Laravel Cloud's persistent database options; retain SQLite only if its storage and backup model are suitable, otherwise provision a managed database and verify migration compatibility.
+- Configure production build, migration, seeding and optimization commands.
+- Verify HTTPS, static GeoJSON compression/cache headers, service-worker registration and update behaviour.
+- Complete responsive QA on supported mobile and desktop browsers.
+- Complete keyboard, focus and basic screen-reader validation.
+- Smoke-test the map shell, search, area details, common-place context, attribution and PWA installation.
+- Connect a custom domain only if one is selected; the Laravel Cloud domain is sufficient for initial V1 validation.
+- Document any Laravel Cloud-specific operational steps discovered during deployment.
+
+**Acceptance criteria**
+- The production deployment is reachable over HTTPS from desktop and mobile devices.
+- Database migrations and geography seed data complete successfully on a fresh production environment.
+- Search, selection, hierarchy, nearby context and map layers work against production data.
+- Static geography responses use an appropriate production cache/compression policy.
+- The service worker registers and the application is installable in a supported browser.
+- Mobile, keyboard and accessibility checks have no release-blocking findings.
+- Production secrets remain outside the repository and application debug output is disabled.
 
 ---
 
@@ -1051,7 +1076,6 @@ SQLite is intentionally the starting point, not a permanent ideological commitme
 Do not spend early development time deciding these before they matter:
 
 - final basemap provider;
-- exact production hosting platform;
 - whether PostgreSQL/PostGIS is eventually required;
 - exact geometry format after GeoJSON stops scaling;
 - CRM/Salesforce integration;
@@ -1086,6 +1110,6 @@ The product should help build a mental model of the region through repeated use.
 
 ## 20. Immediate next step
 
-PRs 0–10 are complete. Start with **PR 11 — Polish and V1 release**.
+PRs 0–11 are complete. Start with **PR 12 — Laravel Cloud deployment and V1 validation**.
 
-The next release should focus on responsive QA, accessibility, loading/error states, performance, attribution, source information and deployment documentation before the V1 release.
+The next release should deploy the application to Laravel Cloud, resolve the production database/storage choice, and complete mobile, accessibility, PWA and HTTPS smoke validation before declaring V1 released.
