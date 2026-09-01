@@ -51,4 +51,24 @@ class PwaAssetsTest extends TestCase
     {
         $this->assertFileExists(dirname(__DIR__, 2).'/public/sw.js');
     }
+
+    public function test_production_assets_have_explicit_apache_cache_policies(): void
+    {
+        $htaccess = file_get_contents(dirname(__DIR__, 2).'/public/.htaccess');
+
+        $this->assertIsString($htaccess);
+        $this->assertStringContainsString('^/build/', $htaccess);
+        $this->assertStringContainsString('max-age=31536000, immutable', $htaccess);
+        $this->assertStringContainsString('^/geo/', $htaccess);
+        $this->assertStringContainsString('max-age=3600, stale-while-revalidate=86400', $htaccess);
+    }
+
+    public function test_committed_geography_assets_are_available_to_the_map_shell(): void
+    {
+        $publicPath = dirname(__DIR__, 2).'/public/geo';
+
+        foreach (['upper-single-tier.geojson', 'lower-tier.geojson', 'common-places.geojson'] as $file) {
+            $this->assertFileExists("{$publicPath}/{$file}");
+        }
+    }
 }

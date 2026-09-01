@@ -1,6 +1,6 @@
 # TerritoryAtlas
 
-TerritoryAtlas is a map-first geography explorer for the Greater Golden Horseshoe. The application currently provides a responsive MapLibre basemap centred on the region; see [PLAN.md](PLAN.md) for the product and delivery plan.
+TerritoryAtlas is a map-first geography explorer for the Greater Golden Horseshoe. It combines authoritative Ontario municipal boundaries with clearly identified common-place context; see [PLAN.md](PLAN.md) for the product and delivery plan.
 
 ## Requirements
 
@@ -31,6 +31,27 @@ The application is available at <http://localhost:8080> by default. Stop the dev
 After a production build is deployed over HTTPS, supported browsers can install TerritoryAtlas from their address-bar or browser-menu install action. Localhost is also treated as a secure context for development.
 
 The service worker caches the application shell and same-origin static geography after it is requested. It does not cache the external basemap, search responses, or area-detail responses, so an internet connection is still required for the complete map experience. Updated service workers take over after existing TerritoryAtlas tabs and installed-app windows close; bump the cache version in `public/sw.js` whenever cached shell behavior changes.
+
+## Production deployment
+
+TerritoryAtlas can run on a conventional Laravel host with PHP, SQLite, and a web server rooted at `public/`. Deploy it over HTTPS so the installable-app features and service worker are available.
+
+For each release:
+
+```bash
+composer install --no-dev --optimize-autoloader
+npm ci
+npm run build
+php artisan migrate --force
+php artisan db:seed --force
+php artisan optimize
+```
+
+Set `APP_ENV=production`, `APP_DEBUG=false`, a stable `APP_KEY`, and the production `APP_URL`. Set `MAP_STYLE_URL` and `MAP_ATTRIBUTION` when using a basemap provider other than the defaults. Ensure the PHP/web-server user can write to `storage`, `bootstrap/cache`, and the SQLite database and its parent directory. Do not expose `.env` or the database through the document root.
+
+Serve compressed responses and retain the cache policy in `public/.htaccess` (or its equivalent in Nginx/Laravel Cloud): hashed `/build/` assets cache for one year, while replaceable `/geo/` data caches for one hour with stale revalidation. After deployment, verify `/`, `/manifest.webmanifest`, `/sw.js`, all three `/geo/` files, search, and one area-detail response. Confirm the browser reports a registered service worker over HTTPS.
+
+Run queue workers, Redis, or a separate database server only if future features require them; V1 does not.
 
 ## Common commands
 

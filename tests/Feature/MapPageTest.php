@@ -18,7 +18,8 @@ class MapPageTest extends TestCase
             ->assertSee('icons/apple-touch-icon.png')
             ->assertSee('<meta name="mobile-web-app-capable" content="yes">', false)
             ->assertSee('<meta name="apple-mobile-web-app-capable" content="yes">', false)
-            ->assertSee('<meta name="apple-mobile-web-app-status-bar-style" content="default">', false);
+            ->assertSee('<meta name="apple-mobile-web-app-status-bar-style" content="default">', false)
+            ->assertSee('<meta name="description"', false);
     }
 
     public function test_the_home_page_displays_the_configured_map(): void
@@ -44,6 +45,10 @@ class MapPageTest extends TestCase
             ->assertSee('data-area-search-input', false)
             ->assertSee('Search places…')
             ->assertSee('area-search', false)
+            ->assertSee('About TerritoryAtlas')
+            ->assertSee('Open Government Licence – Ontario')
+            ->assertSee('data-map-retry', false)
+            ->assertSee('Use search or this list as a keyboard alternative to selecting map features.')
             ->assertSee('data-layer-toggle="major"', false)
             ->assertSee('data-layer-toggle="municipal"', false)
             ->assertSee('data-layer-toggle="common"', false)

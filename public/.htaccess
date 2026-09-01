@@ -1,3 +1,15 @@
+<IfModule mod_headers.c>
+    SetEnvIf Request_URI "^/build/" territory_atlas_immutable_asset
+    SetEnvIf Request_URI "^/geo/" territory_atlas_geography_asset
+
+    Header set Cache-Control "public, max-age=31536000, immutable" env=territory_atlas_immutable_asset
+    Header set Cache-Control "public, max-age=3600, stale-while-revalidate=86400" env=territory_atlas_geography_asset
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE application/geo+json application/json application/javascript image/svg+xml text/css text/javascript
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

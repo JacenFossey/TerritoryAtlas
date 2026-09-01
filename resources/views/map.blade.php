@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="theme-color" content="#f7f6f2">
+        <meta name="description" content="Explore municipalities and commonly used place names across Ontario's Greater Golden Horseshoe.">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -50,6 +51,16 @@
                     ></ul>
                     <p class="area-search-feedback" data-area-search-feedback aria-live="polite"></p>
                 </div>
+
+                <details class="app-about">
+                    <summary>About</summary>
+                    <div class="app-about-content">
+                        <h2>About TerritoryAtlas</h2>
+                        <p>Explore official municipalities and commonly used place names across Ontario’s Greater Golden Horseshoe.</p>
+                        <p>Municipal boundaries come from the <a href="https://data.ontario.ca/en/dataset/municipal-boundaries" target="_blank" rel="noreferrer">Province of Ontario</a> under the <a href="https://www.ontario.ca/page/open-government-licence-ontario" target="_blank" rel="noreferrer">Open Government Licence – Ontario</a>. Common places identify their source and boundary precision in the detail panel.</p>
+                        <p>Basemap attribution and provider links appear in the map’s lower-right corner. TerritoryAtlas does not provide legal boundary advice or offline basemap coverage.</p>
+                    </div>
+                </details>
             </header>
 
             <div class="map-workspace">
@@ -59,7 +70,10 @@
                     role="region"
                     aria-label="Interactive map of the Greater Golden Horseshoe"
                 >
-                    <p class="map-loading" data-map-loading>Loading map…</p>
+                    <div class="map-loading" data-map-loading role="status">
+                        <p data-map-loading-message>Loading map…</p>
+                        <button type="button" data-map-retry hidden>Try again</button>
+                    </div>
                 </div>
 
                 <aside class="map-legend" aria-label="Map legend">
@@ -83,6 +97,7 @@
                         <option value="">Select a division</option>
                     </select>
                     <p class="legend-selection-status" data-region-select-status aria-live="polite">Loading divisions…</p>
+                    <p class="legend-keyboard-note">Use search or this list as a keyboard alternative to selecting map features.</p>
                     <p class="sr-only" data-selected-region aria-live="polite"></p>
                 </aside>
 

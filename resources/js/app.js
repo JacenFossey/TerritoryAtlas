@@ -44,7 +44,9 @@ if (mapContainer && mapConfigElement) {
         }),
     );
 
-    const loadingMessage = mapContainer.querySelector('[data-map-loading]');
+    const loadingState = mapContainer.querySelector('[data-map-loading]');
+    const loadingMessage = mapContainer.querySelector('[data-map-loading-message]');
+    const mapRetry = mapContainer.querySelector('[data-map-retry]');
     const selectedRegionMessage = document.querySelector('[data-selected-region]');
     const regionSelect = document.querySelector('[data-region-select]');
     const regionSelectStatus = document.querySelector('[data-region-select-status]');
@@ -69,15 +71,29 @@ if (mapContainer && mapConfigElement) {
     const areaSearchResults = document.querySelector('[data-area-search-results]');
     const areaSearchFeedback = document.querySelector('[data-area-search-feedback]');
 
+    let mapReady = false;
+
+    const showMapError = (message) => {
+        if (loadingMessage) {
+            loadingMessage.textContent = message;
+        }
+
+        if (mapRetry) {
+            mapRetry.hidden = false;
+        }
+    };
+
+    mapRetry?.addEventListener('click', () => window.location.reload());
+
     map.on('error', ({ error }) => {
         console.error('Map failed to load:', error?.message ?? error);
 
-        if (loadingMessage) {
-            loadingMessage.textContent = 'Unable to load the map.';
+        if (!mapReady) {
+            showMapError('Unable to load the map. Check your connection and try again.');
         }
     });
 
-    map.once('load', () => {
+    map.once('load', async () => {
         const sourceId = 'major-boundaries';
         const fillLayerId = 'major-boundaries-fill';
         const outlineLayerId = 'major-boundaries-outline';
@@ -106,6 +122,11 @@ if (mapContainer && mapConfigElement) {
         let areaSearchTimer = null;
         let searchResults = [];
         let activeSearchResultIndex = -1;
+        let selectionReturnTarget = null;
+
+        if (loadingMessage) {
+            loadingMessage.textContent = 'Loading geography…';
+        }
 
         const fetchBoundaryCollection = (url) => fetch(url).then((response) => {
             if (!response.ok) {
@@ -114,11 +135,35 @@ if (mapContainer && mapConfigElement) {
 
             return response.json();
         });
-        const boundaryCollections = new globalThis.Map([
-            [sourceId, fetchBoundaryCollection(mapConfig.majorBoundariesUrl)],
-            [municipalSourceId, fetchBoundaryCollection(mapConfig.lowerBoundariesUrl)],
-            [commonSourceId, fetchBoundaryCollection(mapConfig.commonPlacesUrl)],
+        const boundaryCollections = new globalThis.Map();
+        const boundaryUrls = new globalThis.Map([
+            [sourceId, mapConfig.majorBoundariesUrl],
+            [municipalSourceId, mapConfig.lowerBoundariesUrl],
+            [commonSourceId, mapConfig.commonPlacesUrl],
         ]);
+        const loadBoundaryCollection = (source) => {
+            if (!boundaryCollections.has(source)) {
+                boundaryCollections.set(source, fetchBoundaryCollection(boundaryUrls.get(source)));
+            }
+
+            return boundaryCollections.get(source);
+        };
+        let majorBoundaryCollection;
+        let municipalBoundaryCollection;
+        let commonPlaceCollection;
+
+        try {
+            [majorBoundaryCollection, municipalBoundaryCollection, commonPlaceCollection] = await Promise.all([
+                loadBoundaryCollection(sourceId),
+                loadBoundaryCollection(municipalSourceId),
+                loadBoundaryCollection(commonSourceId),
+            ]);
+        } catch (error) {
+            console.error('Geography failed to load:', error?.message ?? error);
+            showMapError('Unable to load map geography. Check your connection and try again.');
+
+            return;
+        }
         const commonAreaTypes = new Set([
             'community',
             'neighbourhood',
@@ -172,6 +217,7 @@ if (mapContainer && mapConfigElement) {
                     featureId: area.geometry_key,
                     geometryKey: area.geometry_key,
                     name: area.name,
+                    returnFocusTo: button,
                 });
             });
             item.append(button);
@@ -218,8 +264,9 @@ if (mapContainer && mapConfigElement) {
             areaDetailsName.focus({ preventScroll: true });
         };
 
-        const selectArea = ({ source, featureId, geometryKey, name }) => {
+        const selectArea = ({ source, featureId, geometryKey, name, returnFocusTo = null }) => {
             clearSelection();
+            selectionReturnTarget = returnFocusTo ?? map.getCanvas();
             selectedFeature = { source, id: featureId };
             map.setFeatureState(selectedFeature, { selected: true });
 
@@ -303,8 +350,8 @@ if (mapContainer && mapConfigElement) {
         };
 
         const focusArea = (source, geometryKey) => {
-            boundaryCollections.get(source)
-                ?.then(({ features }) => {
+            loadBoundaryCollection(source)
+                .then(({ features }) => {
                     const feature = features.find(({ properties }) => properties.id === geometryKey);
 
                     if (!feature) {
@@ -378,6 +425,7 @@ if (mapContainer && mapConfigElement) {
                 featureId: area.geometry_key,
                 geometryKey: area.geometry_key,
                 name: area.name,
+                returnFocusTo: areaSearchInput,
             });
             focusArea(source, area.geometry_key);
         };
@@ -473,7 +521,8 @@ if (mapContainer && mapConfigElement) {
             } else if (event.key === 'Enter' && activeSearchResultIndex >= 0) {
                 event.preventDefault();
                 chooseSearchResult(searchResults[activeSearchResultIndex]);
-            } else if (event.key === 'Escape') {
+            } else if (event.key === 'Escape' && !areaSearchResults?.hidden) {
+                event.stopPropagation();
                 closeSearchResults();
             }
         });
@@ -493,8 +542,13 @@ if (mapContainer && mapConfigElement) {
 
             if (regionSelect) {
                 regionSelect.value = '';
-                regionSelect.focus({ preventScroll: true });
             }
+
+            if (selectionReturnTarget?.isConnected && !selectionReturnTarget.disabled) {
+                selectionReturnTarget.focus({ preventScroll: true });
+            }
+
+            selectionReturnTarget = null;
 
             if (selectedRegionMessage) {
                 selectedRegionMessage.textContent = 'Area selection dismissed';
@@ -503,7 +557,7 @@ if (mapContainer && mapConfigElement) {
 
         map.addSource(commonSourceId, {
             type: 'geojson',
-            data: mapConfig.commonPlacesUrl,
+            data: commonPlaceCollection,
             promoteId: 'id',
         });
 
@@ -555,7 +609,7 @@ if (mapContainer && mapConfigElement) {
 
         map.addSource(municipalSourceId, {
             type: 'geojson',
-            data: mapConfig.lowerBoundariesUrl,
+            data: municipalBoundaryCollection,
             promoteId: 'id',
         });
 
@@ -644,7 +698,7 @@ if (mapContainer && mapConfigElement) {
 
         map.addSource(sourceId, {
             type: 'geojson',
-            data: mapConfig.majorBoundariesUrl,
+            data: majorBoundaryCollection,
             promoteId: 'id',
         });
 
@@ -759,7 +813,7 @@ if (mapContainer && mapConfigElement) {
         }
 
         if (regionSelect) {
-            boundaryCollections.get(sourceId)
+            loadBoundaryCollection(sourceId)
                 .then(({ features }) => {
                     const regions = features
                         .map(({ properties }) => ({ id: properties.id, name: properties.name }))
@@ -790,6 +844,7 @@ if (mapContainer && mapConfigElement) {
                     featureId: regionSelect.value,
                     geometryKey: regionSelect.value,
                     name: regionSelect.selectedOptions[0].textContent,
+                    returnFocusTo: regionSelect,
                 });
             });
         }
@@ -861,6 +916,7 @@ if (mapContainer && mapConfigElement) {
             }
         });
 
-        loadingMessage?.remove();
+        mapReady = true;
+        loadingState?.remove();
     });
 }
