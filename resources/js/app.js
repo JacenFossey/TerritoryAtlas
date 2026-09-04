@@ -581,8 +581,8 @@ if (mapContainer && mapConfigElement) {
                     'circle-color': [
                         'case',
                         ['boolean', ['feature-state', 'selected'], false],
-                        '#d9772f',
-                        '#175f50',
+                        '#d8b867',
+                        '#a8945c',
                     ],
                     'circle-radius': [
                         'case',
@@ -590,7 +590,7 @@ if (mapContainer && mapConfigElement) {
                         7,
                         4.5,
                     ],
-                    'circle-stroke-color': '#f7f6f2',
+                    'circle-stroke-color': '#f2ead6',
                     'circle-stroke-width': 1.5,
                 },
             },
@@ -611,8 +611,8 @@ if (mapContainer && mapConfigElement) {
                 'text-padding': 2,
             },
             paint: {
-                'text-color': '#173c2b',
-                'text-halo-color': 'rgba(247, 246, 242, 0.94)',
+                'text-color': '#202825',
+                'text-halo-color': 'rgba(235, 232, 217, 0.92)',
                 'text-halo-width': 1.25,
             },
         });
@@ -633,7 +633,7 @@ if (mapContainer && mapConfigElement) {
                     'fill-color': [
                         'case',
                         ['boolean', ['feature-state', 'selected'], false],
-                        '#d9772f',
+                        '#c8aa62',
                         [
                             'match',
                             ['%', ['to-number', ['get', 'source_identifier']], 5],
@@ -669,7 +669,7 @@ if (mapContainer && mapConfigElement) {
                     'line-color': [
                         'case',
                         ['boolean', ['feature-state', 'selected'], false],
-                        '#8f3f18',
+                        '#d6b661',
                         '#385e61',
                     ],
                     'line-opacity': 0.82,
@@ -721,7 +721,7 @@ if (mapContainer && mapConfigElement) {
                     'fill-color': [
                         'case',
                         ['boolean', ['feature-state', 'selected'], false],
-                        '#d9772f',
+                        '#c8aa62',
                         ['match', ['get', 'area_type'], 'single_tier', '#4f8c78', '#6c83a4'],
                     ],
                     'fill-opacity': [
@@ -746,7 +746,7 @@ if (mapContainer && mapConfigElement) {
                     'line-color': [
                         'case',
                         ['boolean', ['feature-state', 'selected'], false],
-                        '#8f3f18',
+                        '#d6b661',
                         '#304d52',
                     ],
                     'line-opacity': 0.9,
